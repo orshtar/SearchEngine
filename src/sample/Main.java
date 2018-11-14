@@ -6,18 +6,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.show();
+
     }
 
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+        ReadFile rf=new ReadFile();
+        File file=new File("d:/documents/users/shtaro/Downloads/corpus/corpus");
+        String[] folderList=file.list();
+        for(String name: folderList){
+            rf.read("d:/documents/users/shtaro/Downloads/corpus/corpus/"+name);
+        }
     }
 }
