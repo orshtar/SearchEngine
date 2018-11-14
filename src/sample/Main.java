@@ -19,10 +19,10 @@ public class Main extends Application {
     public static void main(String[] args) {
         //launch(args);
         ReadFile rf=new ReadFile();
-        File file=new File("d:/documents/users/shtaro/Downloads/corpus/corpus");
+        File file=new File("corpus");
         String[] folderList=file.list();
         for(String name: folderList){
-            rf.read("d:/documents/users/shtaro/Downloads/corpus/corpus/"+name);
+            rf.read("corpus/"+name);
         }
     }
 }
