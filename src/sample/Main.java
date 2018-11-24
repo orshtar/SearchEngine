@@ -6,7 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.swing.text.html.parser.Parser;
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Month;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Main {
 /*
@@ -18,16 +24,15 @@ public class Main {
 
     public static void main(String[] args) {
         //launch(args);
-        /*
         ReadFile rf=new ReadFile();
-        File file=new File("corpus");
+        File file=new File("new");
         String[] folderList=file.list();
         Parse.initStopWords("stop_words.txt");
         for(String name: folderList){
-            rf.read("corpus/"+name);
+            rf.read("new/"+name);
         }
-        */
-        String str="Dollars";
-        System.out.println(str.equalsIgnoreCase("dollars"));
+        Parse.print();
+
+
     }
 }
