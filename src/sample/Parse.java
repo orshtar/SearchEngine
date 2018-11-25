@@ -29,36 +29,42 @@ public class Parse {
         if(i<doc.length()) {
             i += 6;
             String text = doc.substring(i,doc.length()-8);
+            text+=" , , , ,";
             String[] splitText = text.split(" ");
             int count = 0,skip=0;
             double num;
             for (i = 0; i < splitText.length; i++) {
                 skip=0;
+                splitText[i]=clean(splitText[i]);
                 if(!splitText[i].equals("")){
-                    splitText[i]=clean(splitText[i]);
                     String str="";
                     num=isNumber(splitText[i]);
                     if(num!=-1){
-                        if(splitText[i].charAt(0)=='$' || (splitText.length>(i+1) && splitText[i+1].equalsIgnoreCase("Dollars"))
-                                || ((splitText.length>(i+2) && splitText[i+2].equalsIgnoreCase("Dollars") )
-                                || (splitText.length>(i+3) && splitText[i+3].equalsIgnoreCase("Dollars")))
-                                || (splitText.length>(i+3) && splitText[i+3].equalsIgnoreCase("Dollars"))){
+                        if(splitText[i].charAt(0)=='$' ||  (clean(splitText[i+1])).equalsIgnoreCase("Dollars")
+                                || (clean(splitText[i+2])).equalsIgnoreCase("Dollars")
+                                ||  (clean(splitText[i+3])).equalsIgnoreCase("Dollars")){
                             int[] arr=new int[1];
                             str=handlePrice( num, splitText[i], splitText[i+1], splitText[i+2], splitText[i+3],arr);
                             skip=arr[0];
                         }
-                        else if(splitText[i].charAt(splitText[i].length()-1)=='%' || splitText[i+1].equalsIgnoreCase("percent")
-                                ||splitText[i+1].equalsIgnoreCase("percentage")){
+                        else if(splitText[i].charAt(splitText[i].length()-1)=='%' || (clean(splitText[i+1])).equalsIgnoreCase("percent")
+                                ||(clean(splitText[i+1])).equalsIgnoreCase("percentage")){
                             str=num+"%";
-                            if(splitText[i+1].equalsIgnoreCase("percent")
-                                    ||splitText[i+1].equalsIgnoreCase("percentage"))
+                            if((clean(splitText[i+1])).equalsIgnoreCase("percent")
+                                    ||(clean(splitText[i+1])).equalsIgnoreCase("percentage"))
                                 skip=1;
                         }
                         else if(!isMonth(splitText[i+1]).equals("")){
                             if(num<10)
                                 str=isMonth(splitText[i+1])+"-0"+num;
-                            else
+                            else if(num<32)
                                 str=isMonth(splitText[i+1])+"-"+num;
+                            else{
+                                if(num>1000)
+                                    str=num+"-"+isMonth(splitText[i+1]);
+                                else
+                                    str="19"+num+"-"+isMonth(splitText[i+1]);
+                            }
                             skip=1;
                         }
                         else if(!isMonth(splitText[i-1]).equals("")){
@@ -80,7 +86,7 @@ public class Parse {
                                 num=num/1000;
                                 str=num+"K";
                             }
-                            else if(splitText[i+1].equalsIgnoreCase("thousand")){
+                            else if((clean(splitText[i+1])).equalsIgnoreCase("thousand")){
                                 str=num+"K";
                                 skip=1;
                             }
@@ -88,7 +94,7 @@ public class Parse {
                                 num=num/1000000;
                                 str=num+"M";
                             }
-                            else if(splitText[i+1].equalsIgnoreCase("million")){
+                            else if((clean(splitText[i+1])).equalsIgnoreCase("million")){
                                 str=num+"M";
                                 skip=1;
                             }
@@ -96,22 +102,22 @@ public class Parse {
                                 num=num/1000000000;
                                 str=num+"B";
                             }
-                            else if(splitText[i+1].equalsIgnoreCase("billion")){
+                            else if((clean(splitText[i+1])).equalsIgnoreCase("billion")){
                                 str=num+"B";
                                 skip=1;
                             }
-                            else if(splitText[i+1].equalsIgnoreCase("trillion")){
+                            else if((clean(splitText[i+1])).equalsIgnoreCase("trillion")){
                                 num=num*1000;
                                 str=num+"B";
                                 skip=1;
                             }
                             else{
-                                if(isNumber(splitText[i+1])!=-1){
+                                if(isNumber(splitText[i+1])!=-1 && splitText[i+1].contains("/")){
                                     str=num+" "+splitText[i+1];
                                     skip=1;
                                 }
                                 else
-                                    str=num+"";
+                                    str=splitText[i]+"";
                             }
                         }
                     }
@@ -130,7 +136,7 @@ public class Parse {
                             String s = terms.get(str) + "," + count;
                             terms.replace(str, s);
                         } else {
-                            terms.put(str, count + "");
+                            terms.put(str,docNO+" : "+ count + "");
                         }
                         count++;
                         i=i+skip;
@@ -142,10 +148,10 @@ public class Parse {
 
     private static String clean(String s){
         String ans=s;
-        while(punctuation.contains(ans.charAt(0))){
+        while(!ans.equalsIgnoreCase("") && punctuation.contains(ans.charAt(0))){
             ans=ans.substring(1);
         }
-        while(punctuation.contains(ans.charAt(ans.length()-1))){
+        while(!ans.equalsIgnoreCase("") && punctuation.contains(ans.charAt(ans.length()-1))){
             ans=ans.substring(0,ans.length()-1);
         }
         return ans;
@@ -226,11 +232,25 @@ public class Parse {
                         num2 = num2 * 10 + (s.charAt(i) - '0');
                         i++;
                     }
-                    if (i < len)
+                    if (i <= len)
                         num = -1;
                     else
                         num = num1 / num2;
-                } else
+                }
+                else if(s.charAt(i)==','){
+                    while(i<=len && s.charAt(i)==','){
+                        i++;
+                        while(i<=len && (s.charAt(i) >= '0' && s.charAt(i) <= '9')){
+                            num1 = num1 * 10 + (s.charAt(i) - '0');
+                            i++;
+                        }
+                    }
+                    if(i<=len)
+                        num=-1;
+                    else
+                        num=num1;
+                }
+                else
                     num = -1;
             } else
                 num = num1;
@@ -319,6 +339,14 @@ public class Parse {
         punctuation.add('?');
         punctuation.add('!');
         punctuation.add(';');
+        punctuation.add('&');
+        punctuation.add('|');
+        punctuation.add('[');
+        punctuation.add(']');
+        punctuation.add('<');
+        punctuation.add('>');
+        punctuation.add('-');
+        punctuation.add('/');
         punctuation.add('\'');
         Scanner sc;
         File file=new File(path);
