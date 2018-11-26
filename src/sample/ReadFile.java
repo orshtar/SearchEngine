@@ -19,7 +19,7 @@ public class ReadFile {
                     String str=sc.nextLine();
                     if(str.equals("<DOC>")){
                         String doc="";
-                        while(!(str.equals("<DOC/>") || str.equals("</DOC>"))) {
+                        while(sc.hasNextLine() && !(str.equals("<DOC/>") || str.equals("</DOC>"))) {
                             doc+=str;
                             str=sc.nextLine();
                         }

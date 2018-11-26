@@ -25,14 +25,15 @@ public class Main {
     public static void main(String[] args) {
         //launch(args);
         ReadFile rf=new ReadFile();
-        File file=new File("new");
+        File file=new File("corpus");
         String[] folderList=file.list();
         Parse.initStopWords("stop_words.txt");
         for(String name: folderList){
-            rf.read("new/"+name);
+            rf.read("corpus/"+name);
         }
+        //Indexer.moveToMem();
+        //Indexer.printDict();
         Parse.print();
-
 
     }
 }

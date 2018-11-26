@@ -44,4 +44,16 @@ public class TermObject {
     public String getPosting(){
         return this.posting;
     }
+
+    public void setPosting(String newPos){
+        posting=newPos;
+    }
+
+    public String toString(){
+        String ans="";
+        ans+=term;
+        ans+=(": df-"+df);
+        ans+=(" pos-"+posting);
+        return ans;
+    }
 }
