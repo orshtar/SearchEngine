@@ -33,7 +33,6 @@ public class ReadFile {
                         i++;
                     docNO=docNO.substring(0,i);
                     String[] text2=text[1].split("</TEXT>");
-                    int x=5+7;
                     Parse.parse(text2[0],docNO);
                 }
             }

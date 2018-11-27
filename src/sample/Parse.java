@@ -18,24 +18,25 @@ public class Parse {
         int count = 0,skip=0;
         double num;
         for (int i = 0; i < splitText.length; i++) {
-            skip=0;
-            splitText[i]=cleanTerm(splitText[i]);
-            if(!splitText[i].equals("")){
-                String str="";
-                num=isNumber(splitText[i]);
-                if(num!=-1){
-                    if(splitText[i].charAt(0)=='$' ) {
+            skip = 0;
+            splitText[i] = cleanTerm(splitText[i]);
+            if (!splitText[i].equals("")) {
+                String str = "";
+                num = isNumber(splitText[i]);
+                String[] s = null;
+                if (num != -1) {
+                    if (splitText[i].charAt(0) == '$') {
                         if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
                             str = num + " M" + " Dollars";
-                            skip=1;
+                            skip = 1;
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
                             num = num * 1000;
                             str = num + " M" + " Dollars";
-                            skip=1;
+                            skip = 1;
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
                             num = num * 1000000;
                             str = num + " M" + " Dollars";
-                            skip=1;
+                            skip = 1;
                         } else {
                             if (num >= 1000000) {
                                 num = num / 1000000;
@@ -44,36 +45,29 @@ public class Parse {
                                 str = num + " Dollars";
                             }
                         }
-                    }
-                    else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("Dollars")) {
-                        if(num>=1000000) {
+                    } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("Dollars")) {
+                        if (num >= 1000000) {
                             num = num / 1000000;
                             str = num + " M" + " Dollars";
-                        }
-                        else {
+                        } else {
                             str = num + " Dollars";
                         }
-                        skip=1;
-                    }
-                    else if((cleanTerm(splitText[i+2])).equalsIgnoreCase("Dollars")) {
-                        if(isNumber(splitText[i+1])!=-1) {
+                        skip = 1;
+                    } else if ((cleanTerm(splitText[i + 2])).equalsIgnoreCase("Dollars")) {
+                        if (isNumber(splitText[i + 1]) != -1) {
                             str = splitText[i] + " " + splitText[i + 1] + " " + "Dollars";
-                            skip=2;
-                        }
-                        else if(splitText[i+1].equalsIgnoreCase("m")) {
-                            str =num + " M Dollars";
-                            skip=2;
-                        }
-                        else if(splitText[i+1].equalsIgnoreCase("bn")) {
+                            skip = 2;
+                        } else if (splitText[i + 1].equalsIgnoreCase("m")) {
+                            str = num + " M Dollars";
+                            skip = 2;
+                        } else if (splitText[i + 1].equalsIgnoreCase("bn")) {
                             num = num * 1000;
                             str = num + " M Dollars";
-                            skip=2;
-                        }
-                        else
+                            skip = 2;
+                        } else
                             str = splitText[i];
-                    }
-                    else if((cleanTerm(splitText[i+3])).equalsIgnoreCase("Dollars")){
-                        if((cleanTerm(splitText[i+2])).equalsIgnoreCase("U.S.")) {
+                    } else if ((cleanTerm(splitText[i + 3])).equalsIgnoreCase("Dollars")) {
+                        if ((cleanTerm(splitText[i + 2])).equalsIgnoreCase("U.S.")) {
                             if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
                                 str = num + " M Dollars";
                                 skip = 3;
@@ -85,120 +79,111 @@ public class Parse {
                                 num = num * 1000000;
                                 str = num + " M Dollars";
                                 skip = 3;
+                            } else {
+                                str = splitText[i];
                             }
-                            else {
-                                str=splitText[i];
-                            }
+                        } else {
+                            str = splitText[i];
                         }
-                        else{
-                            str=splitText[i];
-                        }
-                    }
-                    else if(splitText[i].charAt(splitText[i].length()-1)=='%' ){
-                        str=splitText[i];
-                    }
-                    else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("percent")
-                            ||(cleanTerm(splitText[i+1])).equalsIgnoreCase("percentage")){
-                        str=num+"%";
-                        skip=1;
-                    }
-                    else if(!isMonth(splitText[i+1]).equals("")){
-                        if(num<10)
-                            str=isMonth(splitText[i+1])+"-0"+num;
-                        else if(num<32)
-                            str=isMonth(splitText[i+1])+"-"+num;
-                        else{
-                            if(num>1000)
-                                str=num+"-"+isMonth(splitText[i+1]);
+                    } else if (splitText[i].charAt(splitText[i].length() - 1) == '%') {
+                        str = splitText[i];
+                    } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("percent")
+                            || (cleanTerm(splitText[i + 1])).equalsIgnoreCase("percentage")) {
+                        str = num + "%";
+                        skip = 1;
+                    } else if (!isMonth(splitText[i + 1]).equals("")) {
+                        if (num < 10)
+                            str = isMonth(splitText[i + 1]) + "-0" + num;
+                        else if (num < 32)
+                            str = isMonth(splitText[i + 1]) + "-" + num;
+                        else {
+                            if (num > 1000)
+                                str = num + "-" + isMonth(splitText[i + 1]);
                             else
-                                str="19"+num+"-"+isMonth(splitText[i+1]);
+                                str = "19" + num + "-" + isMonth(splitText[i + 1]);
                         }
-                        skip=1;
-                    }
-                    else if(i>0 && !isMonth(splitText[i-1]).equals("")){
+                        skip = 1;
+                    } else if (i > 0 && !isMonth(splitText[i - 1]).equals("")) {
                         if (num > 31) {
-                            if(num>1000)
-                             str=num+"-"+isMonth(splitText[i-1]);
+                            if (num > 1000)
+                                str = num + "-" + isMonth(splitText[i - 1]);
                             else
-                                str="19"+num+"-"+isMonth(splitText[i-1]);
-                        }
-                        else{
-                            if(num<10)
-                                str=isMonth(splitText[i-1])+"-0"+num;
+                                str = "19" + num + "-" + isMonth(splitText[i - 1]);
+                        } else {
+                            if (num < 10)
+                                str = isMonth(splitText[i - 1]) + "-0" + num;
                             else
-                                str=isMonth(splitText[i-1])+"-"+num;
+                                str = isMonth(splitText[i - 1]) + "-" + num;
                         }
-                    }
-                    else{
+                    } else {
                         if (1000 <= num && num < 1000000) {
-                            num=num/1000;
-                            str=num+"K";
-                        }
-                        else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("thousand")){
-                            str=num+"K";
-                            skip=1;
-                        }
-                        else if(1000000<= num && num < 1000000000){
-                            num=num/1000000;
-                            str=num+"M";
-                        }
-                        else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("million")){
-                            str=num+"M";
-                            skip=1;
-                        }
-                        else if(num>=1000000000){
-                            num=num/1000000000;
-                            str=num+"B";
-                        }
-                        else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("billion")){
-                            str=num+"B";
-                            skip=1;
-                        }
-                        else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("trillion")){
-                            num=num*1000;
-                            str=num+"B";
-                            skip=1;
-                        }
-                        else{
-                            if(isNumber(splitText[i+1])!=-1 && splitText[i+1].contains("/")){
-                                str=num+" "+splitText[i+1];
-                                skip=1;
+                            num = num / 1000;
+                            str = num + "K";
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("thousand")) {
+                            str = num + "K";
+                            skip = 1;
+                        } else if (1000000 <= num && num < 1000000000) {
+                            num = num / 1000000;
+                            str = num + "M";
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
+                            str = num + "M";
+                            skip = 1;
+                        } else if (num >= 1000000000) {
+                            num = num / 1000000000;
+                            str = num + "B";
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
+                            str = num + "B";
+                            skip = 1;
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
+                            num = num * 1000;
+                            str = num + "B";
+                            skip = 1;
+                        } else {
+                            if (isNumber(splitText[i + 1]) != -1 && splitText[i + 1].contains("/")) {
+                                str = num + " " + splitText[i + 1];
+                                skip = 1;
+                            } else {
+                                str = splitText[i] + "";
                             }
-                            else
-                                str=splitText[i]+"";
                         }
                     }
-                }
-                else{
-                    if(splitText[i].equalsIgnoreCase("between") && isNumber(splitText[i+1])!=-1
-                            && splitText[i+2].equalsIgnoreCase("and") && isNumber(splitText[i+3])!=-1){
-                        str=isNumber(splitText[i+1])+"-"+isNumber(splitText[i+3]);
-                        skip=3;
+                } else {
+                    if (splitText[i].equalsIgnoreCase("between") && isNumber(splitText[i + 1]) != -1
+                            && splitText[i + 2].equalsIgnoreCase("and") && isNumber(splitText[i + 3]) != -1) {
+                        str = isNumber(splitText[i + 1]) + "-" + isNumber(splitText[i + 3]);
+                        skip = 3;
+                    } else {
+                        str = splitText[i];
+                        if (str.contains(","))
+                            s = str.split(",");
+                        else if (str.contains("."))
+                            s = str.split(".");
+                        else if (str.contains("\n"))
+                            s = str.split("\n");
+                        else if (str.contains("/"))
+                            s = str.split("/");
                     }
-                    else{
-                        str=splitText[i];
-                    }
                 }
-                if(!stopWords.contains(splitText[i].toLowerCase())) {
+                if(s!=null && s.length>1)
+                    str=s[0];
+                if (!stopWords.contains(splitText[i].toLowerCase())) {
                     if (terms.containsKey(str.toUpperCase())) {
-                        if(str.charAt(0)>='A' && str.charAt(0)<='Z') {
-                            int temp=terms.get(str.toUpperCase());
+                        if (str.charAt(0) >= 'A' && str.charAt(0) <= 'Z') {
+                            int temp = terms.get(str.toUpperCase());
                             temp++;
                             terms.replace(str.toUpperCase(), temp);
-                        }
-                        else{
-                            int temp=terms.get(str.toUpperCase());
+                        } else {
+                            int temp = terms.get(str.toUpperCase());
                             temp++;
                             terms.remove(str.toUpperCase());
                             terms.put(str.toLowerCase(), temp);
                         }
-                    }else if(terms.containsKey(str.toLowerCase())){
-                        int temp=terms.get(str.toLowerCase());
+                    } else if (terms.containsKey(str.toLowerCase())) {
+                        int temp = terms.get(str.toLowerCase());
                         temp++;
                         terms.replace(str.toLowerCase(), temp);
-                    }
-                    else {
-                        if(!str.equals("")) {
+                    } else {
+                        if (!str.equals("")) {
                             if (str.charAt(0) >= 'A' && str.charAt(0) <= 'Z')
                                 str = str.toUpperCase();
                             else
@@ -206,11 +191,15 @@ public class Parse {
                             terms.put(str, 1);
                         }
                     }
-                    i=i+skip;
+                    i = i + skip;
+                    if(s!=null && s.length>1){
+                        splitText[i]=s[1];
+                        i--;
+                    }
                 }
             }
         }
-        //Indexer.invertIndex(terms,docNO);
+        Indexer.invertIndex(terms,docNO);
 
     }
 
@@ -319,6 +308,10 @@ public class Parse {
         punctuation.add('\n');
         punctuation.add('(');
         punctuation.add(')');
+        punctuation.add('*');
+        punctuation.add('+');
+        punctuation.add('=');
+        punctuation.add('#');
         punctuation.add('?');
         punctuation.add('!');
         punctuation.add(';');
