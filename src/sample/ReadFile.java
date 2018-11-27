@@ -21,7 +21,9 @@ public class ReadFile {
                     if(str.equals("<DOC>")) {
                         docNO="";
                         str=sc.nextLine();
-                        int i = 8;
+                        int i = 7;
+                        if(str.charAt(i)==' ')
+                            i++;
                         while (str.charAt(i) != ' ' && str.charAt(i) != '<') {
                             docNO += str.charAt(i);
                             i++;

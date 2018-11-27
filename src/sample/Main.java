@@ -26,12 +26,12 @@ public class Main {
         //launch(args);
         Long start=System.currentTimeMillis();
         ReadFile rf=new ReadFile();
-        File file=new File("corpus");
+        File file=new File("new");
         String[] folderList=file.list();
         Parse.initStopWords("stop_words.txt");
         int i=1;
         for(String name: folderList){
-            rf.read("corpus/"+name);
+            rf.read("new/"+name);
             System.out.println(i);
             i++;
         }
@@ -40,8 +40,7 @@ public class Main {
         Long end=System.currentTimeMillis();
         System.out.println(end-start);
         System.out.println("");
-
-        //Parse.print();
+        Parse.print();
 
     }
 }

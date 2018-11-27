@@ -13,7 +13,7 @@ public class Parse {
 
     public static void parse(String doc, String docNO){
         int i=6;
-        String text = doc.substring(i,doc.length());
+        String text =/* doc.substring(i,doc.length())*/doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
         int count = 0,skip=0;
@@ -25,19 +25,83 @@ public class Parse {
                 String str="";
                 num=isNumber(splitText[i]);
                 if(num!=-1){
-                    if(splitText[i].charAt(0)=='$' ||  (cleanTerm(splitText[i+1])).equalsIgnoreCase("Dollars")
-                            || (cleanTerm(splitText[i+2])).equalsIgnoreCase("Dollars")
-                            ||  (cleanTerm(splitText[i+3])).equalsIgnoreCase("Dollars")){
-                        int[] arr=new int[1];
-                        str=handlePrice( num, splitText[i], splitText[i+1], splitText[i+2], splitText[i+3],arr);
-                        skip=arr[0];
+                    if(splitText[i].charAt(0)=='$' ) {
+                        if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
+                            str = num + " M" + " Dollars";
+                            skip=1;
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
+                            num = num * 1000;
+                            str = num + " M" + " Dollars";
+                            skip=1;
+                        } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
+                            num = num * 1000000;
+                            str = num + " M" + " Dollars";
+                            skip=1;
+                        } else {
+                            if (num >= 1000000) {
+                                num = num / 1000000;
+                                str = num + " M" + " Dollars";
+                            } else {
+                                str = num + " Dollars";
+                            }
+                        }
                     }
-                    else if(splitText[i].charAt(splitText[i].length()-1)=='%' || (cleanTerm(splitText[i+1])).equalsIgnoreCase("percent")
+                    else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("Dollars")) {
+                        if(num>=1000000) {
+                            num = num / 1000000;
+                            str = num + " M" + " Dollars";
+                        }
+                        else {
+                            str = num + " Dollars";
+                        }
+                        skip=1;
+                    }
+                    else if((cleanTerm(splitText[i+2])).equalsIgnoreCase("Dollars")) {
+                        if(isNumber(splitText[i+1])!=-1) {
+                            str = splitText[i] + " " + splitText[i + 1] + " " + "Dollars";
+                            skip=2;
+                        }
+                        else if(splitText[i+1].equalsIgnoreCase("m")) {
+                            str =num + " M Dollars";
+                            skip=2;
+                        }
+                        else if(splitText[i+1].equalsIgnoreCase("bn")) {
+                            num = num * 1000;
+                            str = num + " M Dollars";
+                            skip=2;
+                        }
+                        else
+                            str = splitText[i];
+                    }
+                    else if((cleanTerm(splitText[i+3])).equalsIgnoreCase("Dollars")){
+                        if((cleanTerm(splitText[i+2])).equalsIgnoreCase("U.S.")) {
+                            if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
+                                str = num + " M Dollars";
+                                skip = 3;
+                            } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
+                                num = num * 1000;
+                                str = num + " M Dollars";
+                                skip = 3;
+                            } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
+                                num = num * 1000000;
+                                str = num + " M Dollars";
+                                skip = 3;
+                            }
+                            else {
+                                str=splitText[i];
+                            }
+                        }
+                        else{
+                            str=splitText[i];
+                        }
+                    }
+                    else if(splitText[i].charAt(splitText[i].length()-1)=='%' ){
+                        str=splitText[i];
+                    }
+                    else if((cleanTerm(splitText[i+1])).equalsIgnoreCase("percent")
                             ||(cleanTerm(splitText[i+1])).equalsIgnoreCase("percentage")){
                         str=num+"%";
-                        if((cleanTerm(splitText[i+1])).equalsIgnoreCase("percent")
-                                ||(cleanTerm(splitText[i+1])).equalsIgnoreCase("percentage"))
-                            skip=1;
+                        skip=1;
                     }
                     else if(!isMonth(splitText[i+1]).equals("")){
                         if(num<10)
@@ -209,7 +273,14 @@ public class Parse {
     }
 
     private static double isNumber(String s) {
-        if(s.length()>0 && s.charAt(0)>='0' && s.charAt(0)<+'9'){
+        if(s.length()>0 && ((s.charAt(0)>='0' && s.charAt(0)<+'9') || s.charAt(0)=='$')){
+            if(s.charAt(0)=='$')
+                s=s.substring(1);
+            if(s.charAt(s.length()-1)=='%')
+                s=s.substring(0,s.length()-1);
+            if(s.contains(",")){
+                s=s.replaceAll(",","");
+            }
             try{
                 double num1=Double.parseDouble(s);
                 return num1;
@@ -229,76 +300,6 @@ public class Parse {
             }
         }
         return -1;
-    }
-
-    private static String handlePrice(double num, String first, String second, String third, String forth,int[] arr){
-        String ans="";
-        if(second.equalsIgnoreCase("Dollars")){
-            if(num<1000000){
-                ans=first+" Dollars";
-            }
-            else{
-                num=num/1000000;
-                ans=num+" M"+" Dollars";
-            }
-            arr[0]=1;
-        }
-        else if(third.equalsIgnoreCase("Dollars")) {
-            double secondNum=isNumber(second);
-            if(secondNum!=-1){
-                ans=first+second+" Dollars";
-            }
-            else if(second.equalsIgnoreCase("m") || second.equalsIgnoreCase("million")){
-                ans=first+" M"+" Dollars";
-            }
-            else if(second.equalsIgnoreCase("bn") || second.equalsIgnoreCase("billion")){
-                num=num*1000;
-                ans=num+" M"+" Dollars";
-            }
-            arr[0]=2;
-        }
-        else if(forth.equalsIgnoreCase("Dollars") && third.equalsIgnoreCase("U.S.")){
-            if(second.equalsIgnoreCase("billion")){
-                num=num*1000;
-                ans=num+" M"+" Dollars";
-
-            }
-            else if(second.equalsIgnoreCase("million")){
-                ans=first+" M"+" Dollars";
-            }
-            else if(second.equalsIgnoreCase("trillion")){
-                num=num*1000000;
-                ans=num+" M"+" Dollars";
-            }
-            arr[0]=3;
-        }
-        else if(first.charAt(0)=='$'){
-            if(second.equalsIgnoreCase("million")){
-                ans=num+" M"+" Dollars";
-            }
-            else if(second.equalsIgnoreCase("billion")){
-                num=num*1000;
-                ans=num+" M"+" Dollars";
-            }
-            else if(second.equalsIgnoreCase("trillion")){
-                num=num*1000000;
-                ans=num+" M"+" Dollars";
-            }
-            else{
-                if(num>=1000000){
-                    num=num/1000000;
-                    ans=num+" M"+" Dollars";
-                }
-                else{
-                    ans=num+" Dollars";
-                }
-            }
-            arr[0]=0;
-        }
-        else {
-            ans=num+" Dollars";
-        }
-        return ans;
     }
 
     public static void initStopWords(String path){
