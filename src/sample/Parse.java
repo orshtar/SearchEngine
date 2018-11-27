@@ -12,13 +12,12 @@ public class Parse {
     private static Map<String,Integer> terms;
 
     public static void parse(String doc, String docNO){
-        int i=6;
-        String text =/* doc.substring(i,doc.length())*/doc;
+        String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
         int count = 0,skip=0;
         double num;
-        for (i = 0; i < splitText.length; i++) {
+        for (int i = 0; i < splitText.length; i++) {
             skip=0;
             splitText[i]=cleanTerm(splitText[i]);
             if(!splitText[i].equals("")){
@@ -273,9 +272,12 @@ public class Parse {
     }
 
     private static double isNumber(String s) {
-        if(s.length()>0 && ((s.charAt(0)>='0' && s.charAt(0)<+'9') || s.charAt(0)=='$')){
-            if(s.charAt(0)=='$')
-                s=s.substring(1);
+        if(s.length()>0 && ((s.charAt(0)>='0' && s.charAt(0)<='9') || s.charAt(0)=='$')){
+            if(s.charAt(0)=='$') {
+                s = s.substring(1);
+                if(s.length()==0)
+                    return -1;
+            }
             if(s.charAt(s.length()-1)=='%')
                 s=s.substring(0,s.length()-1);
             if(s.contains(",")){
@@ -289,9 +291,13 @@ public class Parse {
                 if(s.contains("/")){
                     String[] strings=s.split("/");
                     try{
-                        double num1=Double.parseDouble(strings[0]);
-                        double num2=Double.parseDouble(strings[1]);
-                        return num1/num2;
+                        if(strings.length==2) {
+                            double num1 = Double.parseDouble(strings[0]);
+                            double num2 = Double.parseDouble(strings[1]);
+                            if(num2==0)
+                                return 0;
+                            return num1 / num2;
+                        }
                     }
                     catch (NumberFormatException e1){
                         return -1;

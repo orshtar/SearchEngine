@@ -3,44 +3,42 @@ package sample;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class ReadFile {
 
     public void read(String path){
-        Scanner sc;
         File file=new File(path);
         String[] fileList=file.list();
-        for(String name: fileList){
-            String docNO="";
-            File f=new File(path+"/"+name);
-            try{
-                sc=new Scanner(f);
-                while(sc.hasNextLine()){
-                    String str=sc.nextLine();
-                    if(str.equals("<DOC>")) {
-                        docNO="";
-                        str=sc.nextLine();
-                        int i = 7;
-                        if(str.charAt(i)==' ')
-                            i++;
-                        while (str.charAt(i) != ' ' && str.charAt(i) != '<') {
-                            docNO += str.charAt(i);
-                            i++;
-                        }
-                    }
-                    String doc="";
-                    if(str.equals("<TEXT>")){
-                        while(sc.hasNextLine() && !(str.equals("</TEXT>") || str.equals("</DOC>"))) {
-                            doc += str;
-                            str = sc.nextLine();
-                        }
-                        Parse.parse(doc,docNO);
-                    }
-
+        for(String name: fileList) {
+            String p=path+"/"+name;
+            String f="";
+            try {
+                f= new String(Files.readAllBytes(Paths.get(p)), StandardCharsets.UTF_8);
+            }catch (IOException e){}
+            String[] docs=f.split("<DOC>");
+            for(String doc:docs){
+                String[] text=doc.split("<TEXT>");
+                if(text.length>=2){
+                    String[] docNumbers=text[0].split("<DOCNO>");
+                    String docNO=docNumbers[1];
+                    int i=0;
+                    if(docNO.charAt(i)==' ')
+                        i++;
+                    while (docNO.charAt(i)!=' ' && docNO.charAt(i)!='<')
+                        i++;
+                    docNO=docNO.substring(0,i);
+                    String[] text2=text[1].split("</TEXT>");
+                    int x=5+7;
+                    Parse.parse(text2[0],docNO);
                 }
             }
-            catch(FileNotFoundException e){System.out.println("why?????");}
+
+
         }
     }
 }
