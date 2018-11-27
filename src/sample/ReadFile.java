@@ -12,26 +12,33 @@ public class ReadFile {
         File file=new File(path);
         String[] fileList=file.list();
         for(String name: fileList){
+            String docNO="";
             File f=new File(path+"/"+name);
             try{
                 sc=new Scanner(f);
                 while(sc.hasNextLine()){
                     String str=sc.nextLine();
-                    if(str.equals("<DOC>")){
-                        String doc="";
-                        while(sc.hasNextLine() && !(str.equals("<DOC/>") || str.equals("</DOC>"))) {
-                            doc+=str;
-                            str=sc.nextLine();
+                    if(str.equals("<DOC>")) {
+                        docNO="";
+                        str=sc.nextLine();
+                        int i = 8;
+                        while (str.charAt(i) != ' ' && str.charAt(i) != '<') {
+                            docNO += str.charAt(i);
+                            i++;
                         }
-                        Parse.parse(doc);
                     }
+                    String doc="";
+                    if(str.equals("<TEXT>")){
+                        while(sc.hasNextLine() && !(str.equals("</TEXT>") || str.equals("</DOC>"))) {
+                            doc += str;
+                            str = sc.nextLine();
+                        }
+                        Parse.parse(doc,docNO);
+                    }
+
                 }
             }
             catch(FileNotFoundException e){System.out.println("why?????");}
-
-
-
-
         }
     }
 }

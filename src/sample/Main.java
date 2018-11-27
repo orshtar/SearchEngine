@@ -24,16 +24,24 @@ public class Main {
 
     public static void main(String[] args) {
         //launch(args);
+        Long start=System.currentTimeMillis();
         ReadFile rf=new ReadFile();
         File file=new File("corpus");
         String[] folderList=file.list();
         Parse.initStopWords("stop_words.txt");
+        int i=1;
         for(String name: folderList){
             rf.read("corpus/"+name);
+            System.out.println(i);
+            i++;
         }
         //Indexer.moveToMem();
         //Indexer.printDict();
-        Parse.print();
+        Long end=System.currentTimeMillis();
+        System.out.println(end-start);
+        System.out.println("");
+
+        //Parse.print();
 
     }
 }
