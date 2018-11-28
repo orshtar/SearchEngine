@@ -10,6 +10,7 @@ public class Parse {
     private static Set<String> stopWords;
     private static Set<Character> punctuation;
     private static Map<String,Integer> terms;
+    private int max=0;
 
     public void parse(String doc, String docNO, String city){
         String text = doc;
@@ -175,10 +176,14 @@ public class Parse {
                         if (str.charAt(0) >= 'A' && str.charAt(0) <= 'Z') {
                             int temp = terms.get(str.toUpperCase());
                             temp++;
+                            if(temp>max)
+                                max=temp;
                             terms.replace(str.toUpperCase(), temp);
                         } else {
                             int temp = terms.get(str.toUpperCase());
                             temp++;
+                            if(temp>max)
+                                max=temp;
                             terms.remove(str.toUpperCase());
                             terms.put(str.toLowerCase(), temp);
                         }
@@ -204,7 +209,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        i.invertIndex(terms,docNO);
+        i.invertIndex(terms,docNO,max,city);
     }
 
     private String cleanTerm(String s){

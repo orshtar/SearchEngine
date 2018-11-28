@@ -35,7 +35,7 @@ public class Main {
             System.out.println(i);
             i++;
         }
-        //Indexer.moveToMem();
+        Indexer.moveToMem();
 
         Long end=System.currentTimeMillis();
         double t=end-start;
