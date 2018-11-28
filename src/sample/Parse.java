@@ -7,15 +7,19 @@ import java.util.*;
 
 public class Parse {
 
-    private static List<String> stopWords;
-    private static List<Character> punctuation;
+    private static Set<String> stopWords;
+    private static Set<Character> punctuation;
     private static Map<String,Integer> terms;
 
-    public static void parse(String doc, String docNO){
+    public void parse(String doc, String docNO, String city){
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
         int count = 0,skip=0;
+        if(!city.equals("")) {
+            city = cleanTerm(city);
+            city=city.toUpperCase();
+        }
         double num;
         for (int i = 0; i < splitText.length; i++) {
             skip = 0;
@@ -199,11 +203,11 @@ public class Parse {
                 }
             }
         }
-        Indexer.invertIndex(terms,docNO);
-
+        Indexer i=new Indexer();
+        i.invertIndex(terms,docNO);
     }
 
-    private static String cleanTerm(String s){
+    private String cleanTerm(String s){
         String ans=s;
         while(!ans.equalsIgnoreCase("") && punctuation.contains(ans.charAt(0))){
             ans=ans.substring(1);
@@ -214,7 +218,7 @@ public class Parse {
         return ans;
     }
 
-    private static String isMonth(String s){
+    private String isMonth(String s){
         String ans="";
         if(s.length()>3) {
             int m=0;
@@ -260,7 +264,7 @@ public class Parse {
         return ans;
     }
 
-    private static double isNumber(String s) {
+    private double isNumber(String s) {
         if(s.length()>0 && ((s.charAt(0)>='0' && s.charAt(0)<='9') || s.charAt(0)=='$')){
             if(s.charAt(0)=='$') {
                 s = s.substring(1);
@@ -298,9 +302,9 @@ public class Parse {
     }
 
     public static void initStopWords(String path){
-        stopWords=new LinkedList<>();
-        terms=new HashMap<>();
-        punctuation=new LinkedList<>();
+        stopWords=new LinkedHashSet<>();
+        terms=new LinkedHashMap<>();
+        punctuation=new LinkedHashSet<>();
         punctuation.add(':');
         punctuation.add(',');
         punctuation.add('.');

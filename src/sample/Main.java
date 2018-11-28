@@ -25,7 +25,6 @@ public class Main {
     public static void main(String[] args) {
         //launch(args);
         Long start=System.currentTimeMillis();
-        Indexer.init();
         ReadFile rf=new ReadFile();
         File file=new File("corpus");
         String[] folderList=file.list();
@@ -36,10 +35,11 @@ public class Main {
             System.out.println(i);
             i++;
         }
-        Indexer.moveToMem();
+        //Indexer.moveToMem();
 
         Long end=System.currentTimeMillis();
-        System.out.println(end-start);
+        double t=end-start;
+        System.out.println(t/60000);
         System.out.println("");
         //Indexer.printDict();
         //Parse.print();

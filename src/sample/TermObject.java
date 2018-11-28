@@ -2,42 +2,16 @@ package sample;
 
 public class TermObject {
 
-    private String term;
-    private int df;
-    private String docList;
+    private short df;
     private String posting;
 
-    public TermObject(String term, int df, String docl, String posting){
-        this.term=term;
+    public TermObject( short df, String posting){
         this.df=df;
-        this.docList=docl;
         this.posting=posting;
     }
 
-    public boolean equals(Object o){
-        boolean ans=false;
-        if(o instanceof TermObject){
-            if(this.term.equals(((TermObject)o).getTerm())){
-                ans=true;
-            }
-        }
-        return ans;
-    }
 
-    public int hashCode(){
-        return term.hashCode();
-    }
-
-    public String getTerm(){
-        return this.term;
-    }
-
-    public void setTerm(){
-        this.term=term.toLowerCase();
-    }
-
-    public void addDoc(String newDoc){
-        this.docList+=(", "+newDoc);
+    public void addDoc(){
         df++;
     }
 
@@ -51,7 +25,6 @@ public class TermObject {
 
     public String toString(){
         String ans="";
-        ans+=term;
         ans+=(": df-"+df);
         ans+=(" pos-"+posting);
         return ans;

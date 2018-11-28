@@ -17,6 +17,7 @@ public class ReadFile {
         for(String name: fileList) {
             String p=path+"/"+name;
             String f="";
+            String city="";
             try {
                 f= new String(Files.readAllBytes(Paths.get(p)), StandardCharsets.UTF_8);
             }catch (IOException e){}
@@ -24,6 +25,17 @@ public class ReadFile {
             for(String doc:docs){
                 String[] text=doc.split("<TEXT>");
                 if(text.length>=2){
+                    String[] cities=text[0].split("<F P=104>");
+                    if(cities.length>=2){
+                        String[] cities2=cities[1].split("</F>");
+                        if(cities2[0].length()>0) {
+                            String[] temp = cities2[0].split(" ");
+                            int j = 0;
+                            while (j < temp.length && temp[j].equals(""))
+                                j++;
+                            city = temp[j];
+                        }
+                    }
                     String[] docNumbers=text[0].split("<DOCNO>");
                     String docNO=docNumbers[1];
                     int i=0;
@@ -33,7 +45,8 @@ public class ReadFile {
                         i++;
                     docNO=docNO.substring(0,i);
                     String[] text2=text[1].split("</TEXT>");
-                    Parse.parse(text2[0],docNO);
+                    Parse parser=new Parse();
+                    parser.parse(text2[0],docNO,city);
                 }
             }
 
