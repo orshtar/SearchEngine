@@ -12,7 +12,7 @@ public class Parse {
     private static Map<String,Integer> terms;
     private int max=0;
 
-    public void parse(String doc, String docNO, String city){
+    public void parse(String doc, String docNO, String city, boolean stem){
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
@@ -22,6 +22,7 @@ public class Parse {
             city=city.toUpperCase();
         }
         double num;
+        Stemmer stemmer=new Stemmer();
         for (int i = 0; i < splitText.length; i++) {
             skip = 0;
             splitText[i] = cleanTerm(splitText[i]);
@@ -94,31 +95,31 @@ public class Parse {
                         str = splitText[i];
                     } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("percent")
                             || (cleanTerm(splitText[i + 1])).equalsIgnoreCase("percentage")) {
-                        str = num + "%";
+                        str = splitText[i] + "%";
                         skip = 1;
-                    } else if (!isMonth(splitText[i + 1]).equals("")) {
+                    } else if (!isMonth(cleanTerm(splitText[i + 1])).equals("")) {
                         if (num < 10)
-                            str = isMonth(splitText[i + 1]) + "-0" + num;
+                            str =isMonth(cleanTerm(splitText[i + 1])) + "-0" + splitText[i];
                         else if (num < 32)
-                            str = isMonth(splitText[i + 1]) + "-" + num;
+                            str = isMonth(cleanTerm(splitText[i + 1]))+ "-" + splitText[i];
                         else {
                             if (num > 1000)
-                                str = num + "-" + isMonth(splitText[i + 1]);
+                                str = splitText[i] + "-" + isMonth(cleanTerm(splitText[i + 1]));
                             else
-                                str = "19" + num + "-" + isMonth(splitText[i + 1]);
+                                str = "19" + splitText[i] + "-" + isMonth(cleanTerm(splitText[i + 1]));
                         }
                         skip = 1;
-                    } else if (i > 0 && !isMonth(splitText[i - 1]).equals("")) {
+                    } else if (i > 0 && !isMonth(cleanTerm(splitText[i- 1])).equals("")) {
                         if (num > 31) {
                             if (num > 1000)
-                                str = num + "-" + isMonth(splitText[i - 1]);
+                                str = splitText[i] + "-" + isMonth(cleanTerm(splitText[i- 1]));
                             else
-                                str = "19" + num + "-" + isMonth(splitText[i - 1]);
+                                str = "19" + splitText[i] + "-" +isMonth(cleanTerm(splitText[i- 1]));
                         } else {
                             if (num < 10)
-                                str = isMonth(splitText[i - 1]) + "-0" + num;
+                                str =isMonth(cleanTerm(splitText[i- 1])) + "-0" + splitText[i];
                             else
-                                str = isMonth(splitText[i - 1]) + "-" + num;
+                                str =isMonth(cleanTerm(splitText[i- 1])) + "-" + splitText[i];
                         }
                     } else {
                         if (1000 <= num && num < 1000000) {
@@ -172,6 +173,11 @@ public class Parse {
                 if(s!=null && s.length>1)
                     str=s[0];
                 if (!stopWords.contains(splitText[i].toLowerCase())) {
+                    if(stem && !Indexer.containsTerm(str)){
+                        stemmer.add(str.toCharArray(),str.toCharArray().length);
+                        stemmer.stem();
+                        str=new String(stemmer.getResultBuffer());
+                    }
                     if (terms.containsKey(str.toUpperCase())) {
                         if (str.charAt(0) >= 'A' && str.charAt(0) <= 'Z') {
                             int temp = terms.get(str.toUpperCase());

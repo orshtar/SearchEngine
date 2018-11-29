@@ -24,8 +24,9 @@ public class Indexer {
         docs.put(docNum,max_tf+","+map.size()+","+city);
         if(!city.equals("") && !cities.contains(city))
             cities.add(city);
+        String k=fileNum+"";
         for(String term: map.keySet()){
-            if(lineNum>=30000){
+            if(lineNum>=10000){
                 moveToMem();
             }
             if(dictionary.containsKey(term.toLowerCase())) {
@@ -34,7 +35,7 @@ public class Indexer {
                 String pos=to.getPosting();
                 String[] temp=pos.split("/");
                 String newPos;
-                if (temp[0].equals(fileNum)) {
+                if (temp[0].equals(k)) {
                     newPos=docNum+": "+map.get(term)+", "+postingFile.get(Integer.parseInt(temp[1]));
                     postingFile.replace(Integer.parseInt(temp[1]),newPos);
                 }
@@ -55,10 +56,9 @@ public class Indexer {
                 String pos=to.getPosting();
                 String[] temp=pos.split("/");
                 String newPos;
-                if (temp[0].equals(fileNum)) {
+                if (temp[0].equals(k)) {
                     newPos=docNum+": "+map.get(term)+", "+postingFile.get(Integer.parseInt(temp[1]));
                     postingFile.replace(Integer.parseInt(temp[1]),newPos);
-                    int k=0;
                 }
                 else{
                     newPos=docNum+": "+map.get(term)+"/"+pos;
@@ -110,6 +110,10 @@ public class Indexer {
     public static void printDict(){
         for(String t: dictionary.keySet())
             System.out.println(t/*+(dictionary.get(t)).toString()*/);
+    }
+
+    public static boolean containsTerm (String term){
+        return dictionary.containsKey(term.toLowerCase())|| dictionary.containsKey(term.toUpperCase());
     }
 
 

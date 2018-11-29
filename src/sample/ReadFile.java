@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class ReadFile {
 
-    public void read(String path){
+    public void read(String path,boolean stem){
         File file=new File(path);
         String[] fileList=file.list();
         for(String name: fileList) {
@@ -46,7 +46,7 @@ public class ReadFile {
                     docNO=docNO.substring(0,i);
                     String[] text2=text[1].split("</TEXT>");
                     Parse parser=new Parse();
-                    parser.parse(text2[0],docNO,city);
+                    parser.parse(text2[0],docNO,city, stem);
                 }
             }
 

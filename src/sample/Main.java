@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashSet;
 
 public class Main {
 /*
@@ -26,12 +27,12 @@ public class Main {
         //launch(args);
         Long start=System.currentTimeMillis();
         ReadFile rf=new ReadFile();
-        File file=new File("corpus");
+        File file=new File("new");
         String[] folderList=file.list();
         Parse.initStopWords("stop_words.txt");
         int i=1;
         for(String name: folderList){
-            rf.read("corpus/"+name);
+            rf.read("new/"+name,true);
             System.out.println(i);
             i++;
         }
@@ -41,7 +42,7 @@ public class Main {
         double t=end-start;
         System.out.println(t/60000);
         System.out.println("");
-        //Indexer.printDict();
+        Indexer.printDict();
         //Parse.print();
 
     }
