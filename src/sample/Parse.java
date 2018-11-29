@@ -229,7 +229,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        //i.invertIndex(terms,docNO,max,city);
+        i.invertIndex(terms,docNO,max,city);
     }
 
     private String cleanTerm(String s){
