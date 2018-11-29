@@ -91,7 +91,14 @@ public class Parse {
                         } else {
                             str = splitText[i];
                         }
-                    } else if (splitText[i].charAt(splitText[i].length() - 1) == '%') {
+                    } else if((cleanTerm(splitText[i + 1])).equals("miles")){
+                        str=splitText[i]+" "+cleanTerm(splitText[i + 1]);
+                        skip=1;
+                    }else if(splitText[i + 1].equalsIgnoreCase("p.m.") || splitText[i + 1].equalsIgnoreCase("a.m.")){
+                        str=splitText[i]+" "+splitText[i + 1];
+                        skip=1;
+                    }
+                    else if (splitText[i].charAt(splitText[i].length() - 1) == '%') {
                         str = splitText[i];
                     } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("percent")
                             || (cleanTerm(splitText[i + 1])).equalsIgnoreCase("percentage")) {
@@ -166,8 +173,14 @@ public class Parse {
                             s = str.split(".");
                         else if (str.contains("\n"))
                             s = str.split("\n");
+                        else if (str.contains("\r"))
+                            s = str.split("\r");
+                        else if (str.contains("\r\n"))
+                            s = str.split("\r\n");
                         else if (str.contains("/"))
                             s = str.split("/");
+                        else if (str.contains(" "))
+                            s = str.split(" ");
                     }
                 }
                 if(s!=null && s.length>1)
@@ -176,22 +189,23 @@ public class Parse {
                     if(stem && !Indexer.containsTerm(str)){
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
                         stemmer.stem();
-                        str=new String(stemmer.getResultBuffer());
+                        str=new String(stemmer.toString());
                     }
                     if (terms.containsKey(str.toUpperCase())) {
-                        if (str.charAt(0) >= 'A' && str.charAt(0) <= 'Z') {
-                            int temp = terms.get(str.toUpperCase());
-                            temp++;
-                            if(temp>max)
-                                max=temp;
-                            terms.replace(str.toUpperCase(), temp);
-                        } else {
+                        if(str.charAt(0) >= 'a' && str.charAt(0) <= 'z'){
                             int temp = terms.get(str.toUpperCase());
                             temp++;
                             if(temp>max)
                                 max=temp;
                             terms.remove(str.toUpperCase());
                             terms.put(str.toLowerCase(), temp);
+                        }
+                        else {
+                            int temp = terms.get(str.toUpperCase());
+                            temp++;
+                            if (temp > max)
+                                max = temp;
+                            terms.replace(str.toUpperCase(), temp);
                         }
                     } else if (terms.containsKey(str.toLowerCase())) {
                         int temp = terms.get(str.toLowerCase());
@@ -215,7 +229,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        i.invertIndex(terms,docNO,max,city);
+        //i.invertIndex(terms,docNO,max,city);
     }
 
     private String cleanTerm(String s){
@@ -353,7 +367,8 @@ public class Parse {
     }
 
     public static void clear(){
-        terms.clear();
+        if(terms!=null)
+            terms.clear();
     }
 
     public static void print(){
