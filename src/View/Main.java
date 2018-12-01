@@ -1,30 +1,34 @@
-package sample;
+package View;
 
+import Model.Indexer;
+import Model.Parse;
+import Model.ReadFile;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.swing.text.html.parser.Parser;
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Month;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashSet;
 
-public class Main {
-/*
+public class Main extends Application{
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-
+        FXMLLoader fxmlLoader=new FXMLLoader();
+        Parent root = fxmlLoader.load(getClass().getResource("View.fxml").openStream());
+        View viewControl = fxmlLoader.getController();
+        //viewControl.setPrimStage(primaryStage);
+        primaryStage.setTitle("Search");
+        Scene scene = new Scene(root, 1000, 650);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
-*/
+
 
     public static void main(String[] args) {
-        //launch(args);
+        launch(args);
+        /*
         Long start=System.currentTimeMillis();
         ReadFile rf=new ReadFile();
         File file=new File("corpus");
@@ -44,6 +48,6 @@ public class Main {
         System.out.println("");
         //Indexer.printDict();
         //Parse.print();
-
+*/
     }
 }

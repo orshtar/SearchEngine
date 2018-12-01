@@ -1,13 +1,6 @@
-package sample;
-
-import org.omg.CORBA.DynAnyPackage.Invalid;
-import sun.reflect.generics.tree.Tree;
+package Model;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Indexer {

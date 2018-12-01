@@ -32,7 +32,7 @@
    Release 4
 
 */
-package sample;
+package Model;
 import java.io.*;
 
 /**
