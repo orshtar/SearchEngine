@@ -20,13 +20,13 @@ public class Indexer {
     private static int fileNum=1;
 
 
-    public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city){
-        docs.put(docNum,max_tf+","+map.size()+","+city);
+    public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city,String docName){
+        docs.put(docNum,max_tf+","+map.size()+","+city+","+docName);
         if(!city.equals("") && !cities.contains(city))
             cities.add(city);
         String k=fileNum+"";
         for(String term: map.keySet()){
-            if(lineNum>=5000){
+            if(lineNum>=10000){
                 moveToMem();
             }
             if(dictionary.containsKey(term.toLowerCase())) {

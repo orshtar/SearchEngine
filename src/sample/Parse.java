@@ -12,7 +12,7 @@ public class Parse {
     private static Map<String,Integer> terms;
     private int max=0;
 
-    public void parse(String doc, String docNO, String city, boolean stem){
+    public void parse(String doc, String docNO, String city, boolean stem,String docName){
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
@@ -229,7 +229,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        i.invertIndex(terms,docNO,max,city);
+        i.invertIndex(terms,docNO,max,city,docName);
     }
 
     private String cleanTerm(String s){
