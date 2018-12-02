@@ -156,7 +156,7 @@ public class Parse {
                                 str = num + " " + splitText[i + 1];
                                 skip = 1;
                             } else {
-                                str = splitText[i] + "";
+                                str = num + "";
                             }
                         }
                     }
@@ -166,25 +166,35 @@ public class Parse {
                         str = isNumber(splitText[i + 1]) + "-" + isNumber(splitText[i + 3]);
                         skip = 3;
                     } else {
+                        boolean v=true;
                         str = splitText[i];
                         if (str.contains(","))
                             s = str.split(",");
-                        else if (str.contains("."))
+                        if (str.contains(".") )
                             s = str.split(".");
-                        else if (str.contains("\n"))
+                        if (str.contains("\n"))
                             s = str.split("\n");
-                        else if (str.contains("\r"))
+                        if (str.contains("\r"))
                             s = str.split("\r");
-                        else if (str.contains("\r\n"))
+                        if (str.contains("\r\n"))
                             s = str.split("\r\n");
-                        else if (str.contains("/"))
+                        if (str.contains("/"))
                             s = str.split("/");
-                        else if (str.contains(" "))
+                        if (str.contains(" "))
                             s = str.split(" ");
+                        if (str.contains("--"))
+                            s = str.split("--");
+                        if (str.contains("\'"))
+                            s = str.split("'");
+                        if (str.contains("("))
+                            s = str.split("\\(");
+                        if (str.contains(")"))
+                            s = str.split("\\)");
+                        if (s != null && s.length > 1)
+                            str = s[0];
                     }
                 }
-                if(s!=null && s.length>1)
-                    str=s[0];
+
                 if (!stopWords.contains(splitText[i].toLowerCase())) {
                     if(stem && !Indexer.containsTerm(str)){
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
@@ -234,10 +244,10 @@ public class Parse {
 
     private String cleanTerm(String s){
         String ans=s;
-        while(!ans.equalsIgnoreCase("") && punctuation.contains(ans.charAt(0))){
+        while(!ans.equals("") && punctuation.contains(ans.charAt(0))){
             ans=ans.substring(1);
         }
-        while(!ans.equalsIgnoreCase("") && punctuation.contains(ans.charAt(ans.length()-1))){
+        while(!ans.equals("") && punctuation.contains(ans.charAt(ans.length()-1))){
             ans=ans.substring(0,ans.length()-1);
         }
         return ans;

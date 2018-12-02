@@ -35,18 +35,16 @@ public class Main /*extends Application*/{
         Parse.initStopWords("stop_words.txt");
         int i=1;
         for(String name: folderList){
-            rf.read("corpus/"+name,false);
+            rf.read("corpus/"+name,true);
             System.out.println(i);
             i++;
         }
-        Indexer.moveToMem();
-
+        //Indexer.sortPostings();
         Long end=System.currentTimeMillis();
         double t=end-start;
         System.out.println(t/60000);
         System.out.println("");
         //Indexer.printDict();
         //Parse.print();
-        //Indexer.sortPostings();
     }
 }

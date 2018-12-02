@@ -99,6 +99,7 @@ public class ReadFile {
                     parser.parse(text2[0],docNO,city, stem,docName);
                 }
             }
+            Indexer.moveToMem();
         }
     }
 
