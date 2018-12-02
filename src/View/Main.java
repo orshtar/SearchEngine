@@ -11,8 +11,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class Main extends Application{
-
+public class Main /*extends Application*/{
+/*
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader=new FXMLLoader();
@@ -24,11 +24,10 @@ public class Main extends Application{
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
+*/
 
     public static void main(String[] args) {
-        launch(args);
-        /*
+        //launch(args);
         Long start=System.currentTimeMillis();
         ReadFile rf=new ReadFile();
         File file=new File("corpus");
@@ -48,6 +47,6 @@ public class Main extends Application{
         System.out.println("");
         //Indexer.printDict();
         //Parse.print();
-*/
+        //Indexer.sortPostings();
     }
 }

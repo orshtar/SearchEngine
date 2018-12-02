@@ -1,7 +1,11 @@
 package Model;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+
 
 public class Indexer {
 
@@ -14,7 +18,7 @@ public class Indexer {
 
 
     public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city,String docName){
-        docs.put(docNum,max_tf+","+map.size()+","+city+","+docName);
+        docs.put(docNum,max_tf+","+map.size()+","+city+","/*+docName*/);
         if(!city.equals("") && !cities.contains(city))
             cities.add(city);
         String k=fileNum+"";
@@ -104,27 +108,107 @@ public class Indexer {
         return dictionary.containsKey(term.toLowerCase())|| dictionary.containsKey(term.toUpperCase());
     }
 
-    public static void merge(){
-        File file=new File("folder");
-        String[] folderList=file.list();
-        for(String name: folderList){
+    private static void initFiles(){
+        try {
+            File file = new File("folder2/nums.txt");
+            file.createNewFile();
+            for(char c='a'; c<='z'; c++){
+                file = new File("folder2/"+c+".txt");
+                file.createNewFile();
+            }
+        }catch( IOException e){}
+    }
 
+    public static void sortPostings(){
+        initFiles();
+        mergeFiles();
+    }
+
+    private static void mergeFiles(){
+        File file=new File("folder");
+        String[] fileList=file.list();
+        int i=0;
+        for(String name: fileList) {
+            System.out.println(i++);
+            try {
+                String p = new String(Files.readAllBytes(Paths.get("folder/" + name)), StandardCharsets.UTF_8);
+                sort(p);
+            } catch(IOException e){System.out.println(e.fillInStackTrace());}
         }
     }
 
-    private static void enter(String posting){
-        //new String(Files.readAllBytes(Paths.get("folder/")), StandardCharsets.UTF_8);
-        String letterFile="";
-        String newLetterFile="";
-        String[] terms=posting.split(":");
-        char cur='1';
+    private static void sort(String file){/*
+        char curr='1', c;
+        String[] lines=file.split("\n");
         int i=0, j=0;
-        while (i<terms.length){
-            if(terms[0].charAt(0)=='$' || terms[0].charAt(0)=='%'
-                        || (terms[0].charAt(0)>='0' &&terms[0].charAt(0)<='9')){
-                cur='1';
+        BufferedWriter bw=null;
+        String currentFile;
+        try{
+            FileWriter fw=new FileWriter("folder2/num.txt",false);
+            currentFile=new String(Files.readAllBytes(Paths.get("folder2/nums.txt")), StandardCharsets.UTF_8);
+            String newFile="";
+            String[] splitLine=lines[i].split(":");
+            bw=new BufferedWriter(fw);
+                c=splitLine[0].charAt(0);
+                if(c<'a' || c>'z'){
+                    c='1';
+                }
+                if(c!=curr){
+                    bw.write(newFile);
+                    bw.flush();
+                    fw=new FileWriter("folder2/" + c + ".txt",false);
+                    bw=new BufferedWriter(fw);
+                    currentFile=new String(Files.readAllBytes(Paths.get("folder2/" + c + ".txt")), StandardCharsets.UTF_8);
+                }
+        }catch(IOException e){}
+        */
+        TreeSet<String> t;
+        String currentFile="";
+        FileWriter fw=null;
+        BufferedWriter bw=null;
+        try {
+            currentFile = new String(Files.readAllBytes(Paths.get("folder2/nums.txt")), StandardCharsets.UTF_8);
+             fw=new FileWriter("folder2/nums.txt",false);
+            bw=new BufferedWriter(fw);
+        }catch(IOException e){}
+        int i=0;
+
+        t=new TreeSet<>(new HashSet<String>(Arrays.asList((new String(currentFile)).split("\n"))));
+        String[] lines=file.split("\n");
+        char c,curr='1';
+        while(i<lines.length){
+            c=lines[i].charAt(0);
+            if(c<'a' || c>'z')
+                c='1';
+            if(c!=curr){
+                String str="";
+                String last="&";
+                for(String s:t){
+                    if(last.equals(s.split(":")[0]))
+                        str+=s.split(":")[1];
+                    else {
+                        str += ("\n"+s);
+                        last=s.split(":")[0];
+                    }
+                }
+                try {
+                    bw.write(str);
+                    bw.flush();
+                }catch (IOException e){}
+                t.clear();
+                try {
+                    currentFile = new String(Files.readAllBytes(Paths.get("folder2/"+c+".txt")), StandardCharsets.UTF_8);
+                    fw=new FileWriter("folder2/"+c+".txt",false);
+                    bw=new BufferedWriter(fw);
+                }catch(IOException e){}
+                i--;
+                t=new TreeSet<>(new HashSet<String>(Arrays.asList((new String(currentFile)).split("\n"))));
+                curr=c;
             }
-            
+            else{
+                t.add(lines[i]);
+            }
+            i++;
         }
     }
 
