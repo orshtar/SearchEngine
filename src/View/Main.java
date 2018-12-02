@@ -11,40 +11,22 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-public class Main /*extends Application*/{
-/*
+public class Main extends Application{
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader=new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("View.fxml").openStream());
         View viewControl = fxmlLoader.getController();
-        //viewControl.setPrimStage(primaryStage);
+        viewControl.init();
         primaryStage.setTitle("Search");
-        Scene scene = new Scene(root, 1000, 650);
+        Scene scene = new Scene(root, 700, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-*/
+
 
     public static void main(String[] args) {
-        //launch(args);
-        Long start=System.currentTimeMillis();
-        ReadFile rf=new ReadFile();
-        File file=new File("corpus");
-        String[] folderList=file.list();
-        Parse.initStopWords("stop_words.txt");
-        int i=1;
-        for(String name: folderList){
-            rf.read("corpus/"+name,true);
-            System.out.println(i);
-            i++;
-        }
-        //Indexer.sortPostings();
-        Long end=System.currentTimeMillis();
-        double t=end-start;
-        System.out.println(t/60000);
-        System.out.println("");
-        //Indexer.printDict();
-        //Parse.print();
+        launch(args);
     }
 }

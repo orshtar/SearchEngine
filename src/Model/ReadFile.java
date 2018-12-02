@@ -12,13 +12,15 @@ public class ReadFile {
 
     private static Map<String,Integer > filesNum;
     private static int shortName;
+    public int docsNum;
 
     public ReadFile(){
         filesNum=new LinkedHashMap<>();
         shortName=0;
+        docsNum=0;
     }
 
-    public void read(String path,boolean stem){
+    public void read(String path,boolean stem, String savePath){
         File file=new File(path);
         String[] fileList=file.list();
         for(String name: fileList) {
@@ -96,10 +98,11 @@ public class ReadFile {
                         docNO=docNO.substring(0,i);
                     String[] text2=text[1].split("</TEXT>");
                     Parse parser=new Parse();
+                    docsNum++;
                     parser.parse(text2[0],docNO,city, stem,docName);
                 }
             }
-            Indexer.moveToMem();
+            Indexer.moveToMem(savePath,stem);
         }
     }
 
@@ -109,5 +112,10 @@ public class ReadFile {
             shortName++;
         }
         return filesNum.get(name) + "";
+    }
+
+    public static void clear(){
+        if(filesNum!=null)
+            filesNum.clear();
     }
 }

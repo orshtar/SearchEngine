@@ -72,9 +72,12 @@ public class Indexer {
     }
 
 
-    public static void moveToMem(){
+    public static void moveToMem(String savePath, boolean isStem){
+        char c='a';
+        if(isStem)
+            c='b';
         try {
-            FileWriter fw=new FileWriter("folder/"+fileNum+".txt");
+            FileWriter fw=new FileWriter(savePath+"/"+fileNum+c+".txt");
             BufferedWriter bw=new BufferedWriter(fw);
             TreeSet<String> t=new TreeSet<>(postingFile.keySet());
             for(String s: t) {
@@ -82,18 +85,22 @@ public class Indexer {
             }
             fw.flush();
             bw.flush();
+            fw.close();
+            bw.close();
         } catch(IOException e){}
         postingFile.clear();
         lineNum=0;
         fileNum++;
         try {
-            FileWriter fw=new FileWriter("folder/docs.txt",true);
+            FileWriter fw=new FileWriter(savePath+"/docs"+c+".txt",true);
             BufferedWriter bw=new BufferedWriter(fw);
             for(String s: docs.keySet()) {
                 bw.write(s+":"+docs.get(s)+"\n");
             }
             fw.flush();
             bw.flush();
+            fw.close();
+            bw.close();
         } catch(IOException e){}
         docs.clear();
     }
@@ -105,6 +112,15 @@ public class Indexer {
 
     public static boolean containsTerm (String term){
         return dictionary.containsKey(term.toLowerCase())|| dictionary.containsKey(term.toUpperCase());
+    }
+
+    public static int getTermNum(){
+        return dictionary.size();
+    }
+
+    public static void clearDict(){
+        if(dictionary!=null)
+            dictionary.clear();
     }
 
     private static void initNewFiles(){

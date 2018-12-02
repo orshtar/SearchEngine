@@ -31,32 +31,53 @@ public class Parse {
                 num = isNumber(splitText[i]);
                 String[] s = null;
                 if (num != -1) {
+                    String sNum="";
+                    if(num%1==0)
+                        sNum = ((int)num) +"";
+                    else
+                        sNum=String.format("%.2f",num);
                     if (splitText[i].charAt(0) == '$') {
                         if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
-                            str = num + " M" + " Dollars";
+                            str = sNum + " M" + " Dollars";
                             skip = 1;
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
                             num = num * 1000;
-                            str = num + " M" + " Dollars";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + " M" + " Dollars";
                             skip = 1;
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
                             num = num * 1000000;
-                            str = num + " M" + " Dollars";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + " M" + " Dollars";
                             skip = 1;
                         } else {
                             if (num >= 1000000) {
                                 num = num / 1000000;
-                                str = num + " M" + " Dollars";
+                                if(num%1==0)
+                                    sNum = ((int)num) +"";
+                                else
+                                    sNum=String.format("%.2f",num);
+                                str = sNum + " M" + " Dollars";
                             } else {
-                                str = num + " Dollars";
+                                str = sNum + " Dollars";
                             }
                         }
                     } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("Dollars")) {
                         if (num >= 1000000) {
                             num = num / 1000000;
-                            str = num + " M" + " Dollars";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + " M" + " Dollars";
                         } else {
-                            str = num + " Dollars";
+                            str = sNum + " Dollars";
                         }
                         skip = 1;
                     } else if ((cleanTerm(splitText[i + 2])).equalsIgnoreCase("Dollars")) {
@@ -64,26 +85,38 @@ public class Parse {
                             str = splitText[i] + " " + splitText[i + 1] + " " + "Dollars";
                             skip = 2;
                         } else if (splitText[i + 1].equalsIgnoreCase("m")) {
-                            str = num + " M Dollars";
+                            str = sNum + " M Dollars";
                             skip = 2;
                         } else if (splitText[i + 1].equalsIgnoreCase("bn")) {
                             num = num * 1000;
-                            str = num + " M Dollars";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + " M Dollars";
                             skip = 2;
                         } else
                             str = splitText[i];
                     } else if ((cleanTerm(splitText[i + 3])).equalsIgnoreCase("Dollars")) {
                         if ((cleanTerm(splitText[i + 2])).equalsIgnoreCase("U.S.")) {
                             if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
-                                str = num + " M Dollars";
+                                str = sNum + " M Dollars";
                                 skip = 3;
                             } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
                                 num = num * 1000;
-                                str = num + " M Dollars";
+                                if(num%1==0)
+                                    sNum = ((int)num) +"";
+                                else
+                                    sNum=String.format("%.2f",num);
+                                str = sNum + " M Dollars";
                                 skip = 3;
                             } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
                                 num = num * 1000000;
-                                str = num + " M Dollars";
+                                if(num%1==0)
+                                    sNum = ((int)num) +"";
+                                else
+                                    sNum=String.format("%.2f",num);
+                                str = sNum + " M Dollars";
                                 skip = 3;
                             } else {
                                 str = splitText[i];
@@ -131,32 +164,48 @@ public class Parse {
                     } else {
                         if (1000 <= num && num < 1000000) {
                             num = num / 1000;
-                            str = num + "K";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + "K";
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("thousand")) {
-                            str = num + "K";
+                            str = sNum + "K";
                             skip = 1;
                         } else if (1000000 <= num && num < 1000000000) {
                             num = num / 1000000;
-                            str = num + "M";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + "M";
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("million")) {
-                            str = num + "M";
+                            str = sNum + "M";
                             skip = 1;
                         } else if (num >= 1000000000) {
                             num = num / 1000000000;
-                            str = num + "B";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + "B";
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("billion")) {
-                            str = num + "B";
+                            str = sNum + "B";
                             skip = 1;
                         } else if ((cleanTerm(splitText[i + 1])).equalsIgnoreCase("trillion")) {
                             num = num * 1000;
-                            str = num + "B";
+                            if(num%1==0)
+                                sNum = ((int)num) +"";
+                            else
+                                sNum=String.format("%.2f",num);
+                            str = sNum + "B";
                             skip = 1;
                         } else {
                             if (isNumber(splitText[i + 1]) != -1 && splitText[i + 1].contains("/")) {
-                                str = num + " " + splitText[i + 1];
+                                str = sNum + " " + splitText[i + 1];
                                 skip = 1;
                             } else {
-                                str = num + "";
+                                str = sNum + "";
                             }
                         }
                     }
@@ -379,6 +428,14 @@ public class Parse {
     public static void clear(){
         if(terms!=null)
             terms.clear();
+    }
+
+    public static void clearAll(){
+        if(stopWords!=null)
+            stopWords.clear();
+        if(punctuation!=null)
+            punctuation.clear();
+        clear();
     }
 
     public static void print(){
