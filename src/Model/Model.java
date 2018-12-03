@@ -15,6 +15,7 @@ public class Model {
         for(String name: folderList){
             rf.read(dataPath+"/"+name,isStem, savePath);
         }
+        Indexer.moveCitytoDisk(savePath);
         return rf.docsNum;
     }
 

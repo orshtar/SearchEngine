@@ -14,7 +14,8 @@ public class Indexer {
     private static Map<String,TermObject > dictionary=new LinkedHashMap<>();
     private static Map<String,String> postingFile=new LinkedHashMap<>();
     private static Map<String,String> docs=new LinkedHashMap<>();
-    private static Set<String> cities=new LinkedHashSet<>();
+    private static Map<String, CityObject> cities=new LinkedHashMap<>();
+    private static Map<String, String> cityPosting=new LinkedHashMap<>();
     private static Set<String> languages=new LinkedHashSet<>();
     private static int lineNum=0;
     private static int fileNum=1;
@@ -22,12 +23,26 @@ public class Indexer {
 
     public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city,String language){
         docs.put(docNum,max_tf+","+map.size()+","+city+","+language);
-        if(!city.equals("") && !cities.contains(city))
-            cities.add(city);
         if(!language.equals("") && !languages.contains(language))
             languages.add(language);
-        String k=fileNum+"";
+        if(!city.equals("")){
+            if (!cities.containsKey(city)) {
+                CityObject c = new CityObject(city);
+                if(c.isCapital())
+                    cities.put(city, c);
+                else
+                    cities.put(city,null);
+            }
+            if(cityPosting.containsKey(city)){
+                String s=cityPosting.get(city)+", "+docNum;
+                cityPosting.replace(city,s);
+            }
+            else{
+                cityPosting.put(city,city+": "+docNum);
+            }
+        }
         for(String term: map.keySet()){
+
             if(dictionary.containsKey(term.toLowerCase())) {
                 TermObject to=dictionary.get(term.toLowerCase());
                 to.addDoc();
@@ -78,6 +93,21 @@ public class Indexer {
         return languages;
     }
 
+    public static void moveCitytoDisk(String savePath){
+        try {
+            FileWriter fw=new FileWriter(savePath+"/cities.txt");
+            BufferedWriter bw=new BufferedWriter(fw);
+            TreeSet<String> t=new TreeSet<>(cityPosting.keySet());
+            for(String s: t) {
+                bw.write(cityPosting.get(s)+"\n");
+            }
+            fw.flush();
+            bw.flush();
+            fw.close();
+            bw.close();
+        } catch(IOException e){}
+        cityPosting.clear();
+    }
 
     public static void moveToMem(String savePath, boolean isStem){
         char c='a';
@@ -128,6 +158,8 @@ public class Indexer {
     public static void clearDict(){
         if(dictionary!=null)
             dictionary.clear();
+        if(cities!=null)
+            cities.clear();
     }
 
     private static void initNewFiles(){

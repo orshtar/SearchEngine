@@ -10,7 +10,6 @@ public class TermObject {
         this.posting=posting;
     }
 
-
     public void addDoc(){
         df++;
     }
