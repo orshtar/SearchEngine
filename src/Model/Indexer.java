@@ -6,7 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.sun.xml.internal.ws.util.VersionUtil.compare;
+
+
 
 
 public class Indexer {
@@ -187,7 +188,7 @@ public class Indexer {
             try {
                 String p = new String(Files.readAllBytes(Paths.get("folder/" + name)), StandardCharsets.UTF_8);
                 sort(p,"folder2/"+(i/80)+".txt");
-            } catch(IOException e){System.out.println(e.fillInStackTrace());}
+            } catch(IOException e){}
         }
     }
 
@@ -243,6 +244,59 @@ public class Indexer {
             for(String s: t) {
                 bw.write("Term: "+s+", df: "+(dictionary.get(s)).toString()+"\n");
             }
+            fw.flush();
+            bw.flush();
+            fw.close();
+            bw.close();
+        } catch(IOException e){}
+    }
+
+    public static void divide(String path, boolean isStem){
+        char stem='a';
+        if(isStem)
+            stem='b';
+        File file=new File(path);
+        String[] fileList=file.list();
+        for(String f: fileList){
+            if(f.charAt(0)>='0'&&f.charAt(0)<='9' && f.charAt(f.length()-5)==stem) {
+                try {
+                    String p = new String(Files.readAllBytes(Paths.get(path + "/" + f)), StandardCharsets.UTF_8);
+                    String[] lines = p.split("\n");
+                    String s = "";
+                    char c = '1', curr='1';
+                    for(String line:lines){
+                        c=line.charAt(0);
+                        if(c<'a' || c>'z')
+                            c='1';
+                        if(curr!=c){
+                            if(c=='1'){
+                                add(s,path+"/nums"+stem+".txt");
+                            }
+                            else{
+                                add(s,path+"/"+c+stem+".txt");
+                            }
+                            curr=c;
+                            s="";
+                        }
+                        else{
+                            s+=("\n"+line);
+                        }
+                    }
+                    File t=new File(path + "/" + f);
+                    t.delete();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    private static void add(String text,String path){
+        try {
+            File yourFile = new File(path);
+            yourFile.createNewFile();
+            FileWriter fw=new FileWriter(path,true);
+            BufferedWriter bw=new BufferedWriter(fw);
+            bw.write(text);
             fw.flush();
             bw.flush();
             fw.close();

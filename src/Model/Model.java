@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 public class Model {
 
-    public int Search(String dataPath, String stopPath, boolean isStem, String savePath){
+    public int Search(String dataPath, String stopPath, boolean isStem, String savePath){/*
         Indexer.clearDict();
         ReadFile rf=new ReadFile();
         File file=new File(dataPath);
@@ -14,9 +14,11 @@ public class Model {
         Parse.initStopWords(stopPath);
         for(String name: folderList){
             rf.read(dataPath+"/"+name,isStem, savePath);
-        }
-        Indexer.moveCitytoDisk(savePath);
-        return rf.docsNum;
+        }*/
+        Indexer.divide(savePath,isStem);
+        //Indexer.moveCitytoDisk(savePath);
+        //return rf.docsNum;
+        return 1;
     }
 
     public int getTermsNum(){
