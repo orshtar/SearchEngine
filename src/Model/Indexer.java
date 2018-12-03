@@ -15,14 +15,17 @@ public class Indexer {
     private static Map<String,String> postingFile=new LinkedHashMap<>();
     private static Map<String,String> docs=new LinkedHashMap<>();
     private static Set<String> cities=new LinkedHashSet<>();
+    private static Set<String> languages=new LinkedHashSet<>();
     private static int lineNum=0;
     private static int fileNum=1;
 
 
-    public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city,String docName){
-        docs.put(docNum,max_tf+","+map.size()+","+city+","/*+docName*/);
+    public static void invertIndex(Map<String,Integer> map, String docNum, int max_tf,String city,String language){
+        docs.put(docNum,max_tf+","+map.size()+","+city+","+language);
         if(!city.equals("") && !cities.contains(city))
             cities.add(city);
+        if(!language.equals("") && !languages.contains(language))
+            languages.add(language);
         String k=fileNum+"";
         for(String term: map.keySet()){
             if(dictionary.containsKey(term.toLowerCase())) {
@@ -69,6 +72,10 @@ public class Indexer {
 
         }
         Parse.clear();
+    }
+
+    public static Set<String> getLangs(){
+        return languages;
     }
 
 
@@ -190,6 +197,25 @@ public class Indexer {
 
             bw.flush();
     }catch(IOException e){}
+    }
+
+    public static void sortDict(String path, boolean stem){
+        char c='a';
+        if(stem){
+            c='b';
+        }
+        try {
+            FileWriter fw=new FileWriter(path+"/dictionary"+c+".txt");
+            BufferedWriter bw=new BufferedWriter(fw);
+            TreeSet<String> t=new TreeSet<>(dictionary.keySet());
+            for(String s: t) {
+                bw.write("Term: "+s+", df: "+(dictionary.get(s)).toString()+"\n");
+            }
+            fw.flush();
+            bw.flush();
+            fw.close();
+            bw.close();
+        } catch(IOException e){}
     }
 
 }

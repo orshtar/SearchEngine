@@ -3,21 +3,23 @@ package View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
+
 import Model.Model;
+import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 public class View {
 
     @FXML
-    private ChoiceBox<String> langs;
+    private ComboBox<String> langs;
     @FXML
     private TextField dataText;
     @FXML
@@ -37,18 +39,6 @@ public class View {
         savePath="";
     }
 
-    public void init(){
-        ArrayList<String> temp= new ArrayList<>();
-        temp.add("English");
-        temp.add("Spanish");
-        temp.add("Hebrew");
-        temp.add("French");
-        temp.add("Chinese");
-        temp.add("Hindi");
-        temp.add("Arabic");
-        ObservableList<String> list= FXCollections.observableArrayList(temp);
-        langs.setItems(list);
-    }
 
     public void Search(){
         dataPath=dataText.getText();
@@ -93,6 +83,10 @@ public class View {
                         + "Number of terms: " + terms + "\n"
                         + "Total runtime in sec: " + t);
                 al.showAndWait();
+                Set<String> langus=model.getLangs();
+                ObservableList<String> list= FXCollections.observableArrayList(langus);
+                langs.setItems(list);
+                langs.setPromptText("Languages");
             }
         }
     }
@@ -120,5 +114,21 @@ public class View {
         for(File f:dir.listFiles())
             f.delete();
         model.reset();
+    }
+
+    public void showDict(){
+        saveDict();
+        char c='a';
+        if(stem.isSelected())
+            c='b';
+        File f;
+        try{
+            f=new File(savePath+"/dictionary"+c+".txt");
+            Desktop.getDesktop().open(f);
+        }catch(IOException e){}
+    }
+
+    public void saveDict(){
+        model.saveDict(savePath, stem.isSelected());
     }
 }

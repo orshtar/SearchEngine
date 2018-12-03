@@ -24,9 +24,6 @@ public class TermObject {
     }
 
     public String toString(){
-        String ans="";
-        ans+=(": df-"+df);
-        ans+=(" pos-"+posting);
-        return ans;
+        return (df+"");
     }
 }

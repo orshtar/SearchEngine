@@ -1,6 +1,8 @@
 package Model;
 
 import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Model {
 
@@ -24,5 +26,13 @@ public class Model {
         Indexer.clearDict();
         Parse.clearAll();
         ReadFile.clear();
+    }
+
+    public void saveDict(String savePath, boolean stem){
+        Indexer.sortDict(savePath,stem);
+    }
+
+    public Set<String> getLangs(){
+        return Indexer.getLangs();
     }
 }

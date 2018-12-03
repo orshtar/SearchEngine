@@ -27,7 +27,7 @@ public class ReadFile {
             String p=path+"/"+name;
             String f="";
             String city="";
-            String docName="";
+            String language="";
             try {
                 f= new String(Files.readAllBytes(Paths.get(p)), StandardCharsets.UTF_8);
             }catch (IOException e){}
@@ -46,36 +46,15 @@ public class ReadFile {
                             city = temp[j];
                         }
                     }
-                    String[] names=text[0].split("<H3> <TI> ");
-                    if(names.length>=2){
-                        String[] names2=names[1].split("</TI></H3>");
-                        if(names2[0].length()>0) {
-                            String[] temp = names2[0].split(" ");
+                    String[] langs=text[1].split("<F P=105>");
+                    if(langs.length>=2){
+                        String[] langs2=langs[1].split("</F>");
+                        if(langs2[0].length()>0) {
+                            String[] temp = langs2[0].split(" ");
                             int j = 0;
                             while (j < temp.length && temp[j].equals(""))
                                 j++;
-                            while (j < temp.length && !temp[j].equals("")) {
-                                docName +=" ";
-                                docName += temp[j];
-                                j++;
-                            }
-                        }
-                    }
-                    else{
-                        names=text[0].split("<HEADLINE>");
-                        if(names.length>=2){
-                            String[] names2=names[1].split("</HEADLINE>");
-                            if(names2[0].length()>0) {
-                                String[] temp = names2[0].split(" ");
-                                int j = 0;
-                                while (j < temp.length && temp[j].equals(""))
-                                    j++;
-                                while (j < temp.length && !temp[j].equals("")) {
-                                    docName +=" ";
-                                    docName += temp[j];
-                                    j++;
-                                }
-                            }
+                            language = temp[j];
                         }
                     }
                     String[] docNumbers=text[0].split("<DOCNO>");
@@ -99,7 +78,7 @@ public class ReadFile {
                     String[] text2=text[1].split("</TEXT>");
                     Parse parser=new Parse();
                     docsNum++;
-                    parser.parse(text2[0],docNO,city, stem,docName);
+                    parser.parse(text2[0],docNO,city, stem,language);
                 }
             }
             Indexer.moveToMem(savePath,stem);

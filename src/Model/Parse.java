@@ -12,7 +12,7 @@ public class Parse {
     private static Map<String,Integer> terms;
     private int max=0;
 
-    public void parse(String doc, String docNO, String city, boolean stem,String docName){
+    public void parse(String doc, String docNO, String city, boolean stem,String language){
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
@@ -20,6 +20,9 @@ public class Parse {
         if(!city.equals("")) {
             city = cleanTerm(city);
             city=city.toUpperCase();
+        }
+        if(!language.equals("")) {
+            language = cleanTerm(language);
         }
         double num;
         Stemmer stemmer=new Stemmer();
@@ -217,33 +220,63 @@ public class Parse {
                     } else {
                         boolean v=true;
                         str = splitText[i];
-                        if (str.contains(","))
+                        if (str.contains(",")) {
                             s = str.split(",");
-                        if (str.contains(".") )
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains(".") ) {
                             s = str.split(".");
-                        if (str.contains("\n"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("\n")) {
                             s = str.split("\n");
-                        if (str.contains("\r"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("\r")) {
                             s = str.split("\r");
-                        if (str.contains("\r\n"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("\r\n")) {
                             s = str.split("\r\n");
-                        if (str.contains("/"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("/")) {
                             s = str.split("/");
-                        if (str.contains(" "))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains(" ")) {
                             s = str.split(" ");
-                        if (str.contains("--"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("--")) {
                             s = str.split("--");
-                        if (str.contains("\'"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("\'")) {
                             s = str.split("'");
-                        if (str.contains("("))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains("(")) {
                             s = str.split("\\(");
-                        if (str.contains(")"))
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
+                        if (str.contains(")")) {
                             s = str.split("\\)");
-                        if (s != null && s.length > 1)
-                            str = s[0];
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
                     }
                 }
-
                 if (!stopWords.contains(splitText[i].toLowerCase())) {
                     if(stem && !Indexer.containsTerm(str)){
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
@@ -288,7 +321,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        i.invertIndex(terms,docNO,max,city,docName);
+        i.invertIndex(terms,docNO,max,city,language);
     }
 
     private String cleanTerm(String s){
@@ -412,6 +445,8 @@ public class Parse {
         punctuation.add('>');
         punctuation.add('-');
         punctuation.add('/');
+        punctuation.add('{');
+        punctuation.add('}');
         punctuation.add('\'');
         Scanner sc;
         File file=new File(path);
