@@ -9,10 +9,11 @@ public class Parse {
 
     private static Set<String> stopWords;
     private static Set<Character> punctuation;
-    private static Map<String,Integer> terms;
+    private static Map<String,String> terms;
     private int max=0;
 
     public void parse(String doc, String docNO, String city, boolean stem,String language){
+        int position=0;
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
@@ -27,6 +28,7 @@ public class Parse {
         double num;
         Stemmer stemmer=new Stemmer();
         for (int i = 0; i < splitText.length; i++) {
+            position++;
             skip = 0;
             splitText[i] = cleanTerm(splitText[i]);
             if (!splitText[i].equals("")) {
@@ -285,23 +287,25 @@ public class Parse {
                     }
                     if (terms.containsKey(str.toUpperCase())) {
                         if(str.charAt(0) >= 'a' && str.charAt(0) <= 'z'){
-                            int temp = terms.get(str.toUpperCase());
-                            temp++;
-                            if(temp>max)
-                                max=temp;
+                            String temp = terms.get(str.toUpperCase());
+                            temp+=("*"+position);
+                            if(temp.split("\\*").length>max)
+                                max=temp.split("\\*").length;
                             terms.remove(str.toUpperCase());
                             terms.put(str.toLowerCase(), temp);
                         }
                         else {
-                            int temp = terms.get(str.toUpperCase());
-                            temp++;
-                            if (temp > max)
-                                max = temp;
+                            String temp = terms.get(str.toUpperCase());
+                            temp+=("*"+position);
+                            if(temp.split("\\*").length>max)
+                                max=temp.split("\\*").length;
                             terms.replace(str.toUpperCase(), temp);
                         }
                     } else if (terms.containsKey(str.toLowerCase())) {
-                        int temp = terms.get(str.toLowerCase());
-                        temp++;
+                        String temp = terms.get(str.toLowerCase());
+                        temp+=("*"+position);
+                        if(temp.split("\\*").length>max)
+                            max=temp.split("\\*").length;
                         terms.replace(str.toLowerCase(), temp);
                     } else {
                         if (!str.equals("")) {
@@ -309,7 +313,7 @@ public class Parse {
                                 str = str.toUpperCase();
                             else
                                 str = str.toLowerCase();
-                            terms.put(str, 1);
+                            terms.put(str, position+"");
                         }
                     }
                     i = i + skip;
@@ -473,9 +477,4 @@ public class Parse {
         clear();
     }
 
-    public static void print(){
-        for(String s:terms.keySet()){
-            System.out.println("key: "+s+", pos: "+terms.get(s));
-        }
-    }
 }

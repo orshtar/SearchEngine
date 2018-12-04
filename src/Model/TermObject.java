@@ -3,26 +3,20 @@ package Model;
 public class TermObject {
 
     private short df;
-    private String posting;
+    private int f;
 
-    public TermObject( short df, String posting){
+    public TermObject( short df, int f){
         this.df=df;
-        this.posting=posting;
+        this.f=f;
     }
 
-    public void addDoc(){
+
+    public void addDoc(int ftoAdd){
         df++;
-    }
-
-    public String getPosting(){
-        return this.posting;
-    }
-
-    public void setPosting(String newPos){
-        posting=newPos;
+        f+=ftoAdd;
     }
 
     public String toString(){
-        return (df+"");
+        return (f+"");
     }
 }

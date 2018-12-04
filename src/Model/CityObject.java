@@ -11,8 +11,6 @@ public class CityObject {
     private String state;
     private String curr;
     private String pop;
-    private String posting;
-
 
     public CityObject(String city){
         state="";
@@ -28,7 +26,7 @@ public class CityObject {
             }
         } catch (MalformedURLException m){}
         catch (IOException e){}
-        if(!line.contains("")) {
+        if(!line.equals("")) {
             String[] temp = line.split("name");
             if (temp.length >= 2) {
                 String[] temp2 = temp[1].split("\"");
@@ -76,6 +74,11 @@ public class CityObject {
                 this.curr = temp3[2];
             }
         }
+    }
+
+    public String toString(){
+        String ans="state: "+this.state+" curr: "+this.curr+" pop: "+this.pop;
+        return ans;
     }
 
     public boolean isCapital(){

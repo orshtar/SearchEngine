@@ -8,7 +8,6 @@ import javafx.scene.control.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Set;
 
 import Model.Model;
