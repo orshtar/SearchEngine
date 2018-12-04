@@ -17,7 +17,7 @@ public class Indexer {
     private static int fileNum=1;
 
 
-    public static void invertIndex(Map<String,String> map, String docNum, int max_tf,String city,String language){
+    public void invertIndex(Map<String,String> map, String docNum, int max_tf,String city,String language){
         docs.put(docNum,max_tf+","+map.size()+","+city+","+language);
         if(!language.equals("") && !languages.contains(language))
             languages.add(language);
@@ -112,7 +112,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){}
+        } catch(IOException e){System.out.println(e.getMessage());}
         cityPosting.clear();
     }
 
@@ -131,7 +131,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){}
+        } catch(IOException e){System.out.println(e.getMessage());}
         postingFile.clear();
         fileNum++;
         try {
@@ -144,7 +144,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){}
+        } catch(IOException e){System.out.println(e.getMessage());}
         docs.clear();
     }
 
@@ -180,7 +180,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){}
+        } catch(IOException e){System.out.println(e.getMessage());}
     }
 
     public static void divide(String path, boolean isStem){
@@ -195,7 +195,7 @@ public class Indexer {
                 try {
                     String p = new String(Files.readAllBytes(Paths.get(path + "/" + f)), StandardCharsets.UTF_8);
                     String[] lines = p.split("\n");
-                    char c = '1', curr='1';
+                    char c , curr='1';
                     for(String line:lines){
                         if(!line.equals("")) {
                             c = line.charAt(0);
@@ -216,7 +216,7 @@ public class Indexer {
                     }
                     File t=new File(path + "/" + f);
                     t.delete();
-                } catch (IOException e) {
+                } catch (IOException e) {System.out.println(e.getMessage());
                 }
             }
         }
@@ -234,7 +234,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){}
+        } catch(IOException e){System.out.println(e.getMessage());}
     }
 
     private static void sort(String path, char stem){
@@ -262,7 +262,7 @@ public class Indexer {
                     bw.flush();
                     fw.close();
                     bw.close();
-                } catch (IOException e) {
+                } catch (IOException e) {System.out.println(e.getMessage());
                 }
             }
         }

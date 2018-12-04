@@ -3,7 +3,6 @@ package Model;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class CityObject {
@@ -14,18 +13,14 @@ public class CityObject {
 
     public CityObject(String city){
         state="";
-        BufferedReader br = null;
-        StringBuilder sb=new StringBuilder();
+        BufferedReader br;
         String line="";
         try {
             URL url = new URL("https://restcountries.eu/rest/v2/capital/"+city);
             br = new BufferedReader(new InputStreamReader(url.openStream()));
             line=br.readLine();
-            if (br != null) {
-                br.close();
-            }
-        } catch (MalformedURLException m){}
-        catch (IOException e){}
+            br.close();
+        } catch (IOException e){System.out.println(e.getMessage());}
         if(!line.equals("")) {
             String[] temp = line.split("name");
             if (temp.length >= 2) {
@@ -40,8 +35,8 @@ public class CityObject {
                 pop = temp3[0];
             }
             double num = Double.parseDouble(pop);
-            String sNum = "";
-            String str = "";
+            String sNum;
+            String str;
             if (1000 <= num && num < 1000000) {
                 num = num / 1000;
                 if (num % 1 == 0)
@@ -77,8 +72,7 @@ public class CityObject {
     }
 
     public String toString(){
-        String ans="state: "+this.state+" curr: "+this.curr+" pop: "+this.pop;
-        return ans;
+        return ("state: "+this.state+" curr: "+this.curr+" pop: "+this.pop);
     }
 
     public boolean isCapital(){

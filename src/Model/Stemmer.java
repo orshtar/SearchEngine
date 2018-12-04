@@ -33,7 +33,6 @@
 
 */
 package Model;
-import java.io.*;
 
 /**
  * Stemmer, implementing the Porter Stemming Algorithm

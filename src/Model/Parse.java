@@ -17,7 +17,7 @@ public class Parse {
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");
-        int count = 0,skip=0;
+        int skip;
         if(!city.equals("")) {
             city = cleanTerm(city);
             city=city.toUpperCase();
@@ -32,11 +32,11 @@ public class Parse {
             skip = 0;
             splitText[i] = cleanTerm(splitText[i]);
             if (!splitText[i].equals("")) {
-                String str = "";
+                String str ;
                 num = isNumber(splitText[i]);
                 String[] s = null;
                 if (num != -1) {
-                    String sNum="";
+                    String sNum;
                     if(num%1==0)
                         sNum = ((int)num) +"";
                     else
@@ -220,7 +220,6 @@ public class Parse {
                         str = isNumber(splitText[i + 1]) + "-" + isNumber(splitText[i + 3]);
                         skip = 3;
                     } else {
-                        boolean v=true;
                         str = splitText[i];
                         if (str.contains(",")) {
                             s = str.split(",");
@@ -283,7 +282,7 @@ public class Parse {
                     if(stem && !Indexer.containsTerm(str)){
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
                         stemmer.stem();
-                        str=new String(stemmer.toString());
+                        str=stemmer.toString();
                     }
                     if (terms.containsKey(str.toUpperCase())) {
                         if(str.charAt(0) >= 'a' && str.charAt(0) <= 'z'){
@@ -342,7 +341,7 @@ public class Parse {
     private String isMonth(String s){
         String ans="";
         if(s.length()>3) {
-            int m=0;
+            int m;
             try {
                 m = Month.valueOf(s.toUpperCase()).getValue();
                 if (m < 10)
@@ -398,8 +397,7 @@ public class Parse {
                 s=s.replaceAll(",","");
             }
             try{
-                double num1=Double.parseDouble(s);
-                return num1;
+                return Double.parseDouble(s);
             }
             catch (NumberFormatException e){
                 if(s.contains("/")){
@@ -460,7 +458,7 @@ public class Parse {
                 String line=sc.nextLine();
                 stopWords.add(line);
             }
-        } catch(FileNotFoundException e){}
+        } catch(FileNotFoundException e){System.out.println(e.getMessage());}
 
     }
 

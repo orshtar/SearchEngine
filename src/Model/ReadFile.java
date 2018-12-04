@@ -30,7 +30,7 @@ public class ReadFile {
             String language="";
             try {
                 f= new String(Files.readAllBytes(Paths.get(p)), StandardCharsets.UTF_8);
-            }catch (IOException e){}
+            }catch (IOException e){System.out.println(e.getMessage());}
             String[] docs=f.split("<DOC>");
             for(String doc:docs){
                 String[] text=doc.split("<TEXT>");

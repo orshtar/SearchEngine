@@ -124,7 +124,7 @@ public class View {
         try{
             f=new File(savePath+"/dictionary"+c+".txt");
             Desktop.getDesktop().open(f);
-        }catch(IOException e){}
+        }catch(IOException e){System.out.println(e.getMessage());}
     }
 
     public void saveDict(){
