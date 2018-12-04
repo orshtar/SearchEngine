@@ -20,7 +20,7 @@ public class CityObject {
             br = new BufferedReader(new InputStreamReader(url.openStream()));
             line=br.readLine();
             br.close();
-        } catch (IOException e){System.out.println(e.getMessage());}
+        } catch (IOException e){}
         if(!line.equals("")) {
             String[] temp = line.split("name");
             if (temp.length >= 2) {

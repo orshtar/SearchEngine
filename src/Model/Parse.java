@@ -226,6 +226,11 @@ public class Parse {
                             if (s.length >= 1)
                                 str = cleanTerm(s[0]);
                         }
+                        if (str.contains("\"")) {
+                            s = str.split("\"");
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
                         if (str.contains(".") ) {
                             s = str.split(".");
                             if (s.length >= 1)
@@ -266,6 +271,11 @@ public class Parse {
                             if (s.length >= 1)
                                 str = cleanTerm(s[0]);
                         }
+                        if (str.contains("`")) {
+                            s = str.split("`");
+                            if (s.length >= 1)
+                                str = cleanTerm(s[0]);
+                        }
                         if (str.contains("(")) {
                             s = str.split("\\(");
                             if (s.length >= 1)
@@ -278,7 +288,7 @@ public class Parse {
                         }
                     }
                 }
-                if (!stopWords.contains(splitText[i].toLowerCase())) {
+                if (!stopWords.contains(str.toLowerCase())) {
                     if(stem && !Indexer.containsTerm(str)){
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
                         stemmer.stem();
