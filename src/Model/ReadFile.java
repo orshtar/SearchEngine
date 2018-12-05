@@ -8,6 +8,11 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ *
+ * this class gets
+ *
+ */
 public class ReadFile {
 
     private static Map<String,Integer > filesNum;
