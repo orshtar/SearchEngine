@@ -141,10 +141,17 @@ public class View {
      *
      */
     public void reset(){
+        if(savePath.equals(""))
+            savePath=saveIn.getText();
         File dir=new File(savePath);
         for(File f:dir.listFiles())
             f.delete();
         model.reset();
+        Alert al = new Alert(Alert.AlertType.INFORMATION);//show finish alert
+        al.setTitle("Done!");
+        al.setHeaderText(null);
+        al.setContentText("All documents deleted");
+        al.showAndWait();
     }
 
     /**
