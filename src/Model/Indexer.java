@@ -220,6 +220,7 @@ public class Indexer {
             dictionary.clear();
         if(cities!=null)
             cities.clear();
+        fileNum=1;
     }
 
     /**

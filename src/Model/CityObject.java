@@ -7,7 +7,7 @@ import java.net.URL;
 
 /**
  *
- * this class saves information on a city
+ * this class saves information on a city: the state currency and the size of the population
  *
  */
 public class CityObject {

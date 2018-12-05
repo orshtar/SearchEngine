@@ -15,6 +15,12 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+/**
+ *
+ *this class is the controller of the view.fxml
+ * the class send requests to the model
+ *
+ */
 public class View {
 
     @FXML
@@ -32,6 +38,11 @@ public class View {
     private String savePath;
 
 
+    /**
+     *
+     * a simple constructor
+     *
+     */
     public View(){
         model=new Model();
         dataPath="";
@@ -39,10 +50,16 @@ public class View {
     }
 
 
+    /**
+     *
+     * this function get two path from the user one for the files and one to save the postings file
+     * and pass the paths to the model
+     *
+     */
     public void Search(){
         dataPath=dataText.getText();
         savePath=saveIn.getText();
-        if(dataPath.equals("") || savePath.equals("")){
+        if(dataPath.equals("") || savePath.equals("")){//check if the user entered the paths
             Alert al=new Alert(Alert.AlertType.ERROR);
             al.setContentText("All fields are required");
             al.showAndWait();
@@ -50,18 +67,18 @@ public class View {
             saveIn.clear();
         }
         else {
-            boolean isStem = stem.isSelected();
+            boolean isStem = stem.isSelected();//get if to do stemming
             File dataSet = new File(dataPath);
             String corpusPath = "";
             String stpPath = "";
-            for (String s : dataSet.list()) {
+            for (String s : dataSet.list()) {//separate the path of data to path to stop word and path to the file
                 File f = new File(dataPath + "/" + s);
                 if (f.isDirectory())
                     corpusPath = dataPath + "/" + s;
                 else
                     stpPath = dataPath + "/" + s;
             }
-            if(corpusPath.equals("") || stpPath.equals("")){
+            if(corpusPath.equals("") || stpPath.equals("")){//if the stop word is missing or the files
                 Alert al=new Alert(Alert.AlertType.ERROR);
                 al.setContentText("Path not found");
                 al.showAndWait();
@@ -69,13 +86,13 @@ public class View {
                 saveIn.clear();
             }
             else {
-                Long start = System.currentTimeMillis();
-                int docNum = model.Search(corpusPath, stpPath, isStem, savePath);
-                Long end = System.currentTimeMillis();
+                Long start = System.currentTimeMillis();//start counter
+                int docNum = model.Search(corpusPath, stpPath, isStem, savePath);//call the model
+                Long end = System.currentTimeMillis();//end counter
                 double t = end - start;
                 t = t / 1000;
-                int terms = model.getTermsNum();
-                Alert al = new Alert(Alert.AlertType.INFORMATION);
+                int terms = model.getTermsNum();//get numbers of terms
+                Alert al = new Alert(Alert.AlertType.INFORMATION);//show finish alert
                 al.setTitle("Done!");
                 al.setHeaderText(null);
                 al.setContentText("Number of total docs: " + docNum + "\n"
@@ -90,6 +107,11 @@ public class View {
         }
     }
 
+    /**
+     *
+     * open a window to search a folder where the data is
+     *
+     */
     public void browseData(){
         DirectoryChooser dc=new DirectoryChooser();
         dc.setTitle("Open data set");
@@ -99,6 +121,11 @@ public class View {
             dataText.setText(f.getPath());
     }
 
+    /**
+     *
+     * open a window to search a folder where to save the posting file
+     *
+     */
     public void browseSave(){
         DirectoryChooser dc=new DirectoryChooser();
         dc.setTitle("Open save location");
@@ -108,6 +135,11 @@ public class View {
             saveIn.setText(f.getPath());
     }
 
+    /**
+     *
+     * reset the program and delete all memory
+     *
+     */
     public void reset(){
         File dir=new File(savePath);
         for(File f:dir.listFiles())
@@ -115,6 +147,11 @@ public class View {
         model.reset();
     }
 
+    /**
+     *
+     * open a file with the dictionary
+     *
+     */
     public void showDict(){
         saveDict();
         char c='a';
@@ -127,6 +164,11 @@ public class View {
         }catch(IOException e){System.out.println(e.getMessage());}
     }
 
+    /**
+     *
+     * save the dictionary to a file
+     *
+     */
     public void saveDict(){
         model.saveDict(savePath, stem.isSelected());
     }
