@@ -17,6 +17,6 @@
       <Button fx:id="reset" layoutX="50.0" layoutY="273.0" mnemonicParsing="false" onAction="#reset" text="Reset" />
       <Button fx:id="showDict" layoutX="245.0" layoutY="273.0" mnemonicParsing="false" onAction="#showDict" text="Display Dictionary" />
       <Button fx:id="saveDict" layoutX="120.0" layoutY="273.0" mnemonicParsing="false" onAction="#saveDict" text="Save Dictionary" />
-      <ComboBox fx:id="langs" layoutX="133.0" layoutY="132.0" prefWidth="150.0" />
+      <ComboBox fx:id="langs" layoutX="133.0" layoutY="132.0" prefWidth="150.0" promptText="Languages" />
    </children>
 </Pane>

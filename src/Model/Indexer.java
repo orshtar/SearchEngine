@@ -49,24 +49,12 @@ public class Indexer {
                     cities.put(city,null);
             }
             if(cityPosting.containsKey(city)){//add the doc number and positions in the doc of the city to an existing city in the posting file of cities
-                String s;
-                if(map.containsKey(city)){
-                    s=cityPosting.get(city)+", "+docNum+"*"+map.get(city);
-                }
-                else{
-                    s=cityPosting.get(city)+", "+docNum;
-                }
+                String s=cityPosting.get(city)+","+docNum;
                 cityPosting.replace(city,s);
             }
             else{
-                String s;//add a new city to the posting file of cities
-                if(map.containsKey(city)){
-                    s=docNum+"*"+map.get(city);
-                }
-                else{
-                    s=docNum;
-                }
-                cityPosting.put(city,city+": "+s);
+                String s=docNum;
+                cityPosting.put(city,s);
             }
         }
         for(String term: map.keySet()){//pass on all terms from the parse
@@ -131,13 +119,21 @@ public class Indexer {
      *
      * @param savePath path to save the file
      */
-    public static void moveCitytoDisk(String savePath){
+    public static void moveCitytoDisk(String savePath,boolean stem){
         try {
             FileWriter fw=new FileWriter(savePath+"/cities.txt");
             BufferedWriter bw=new BufferedWriter(fw);
             TreeSet<String> t=new TreeSet<>(cityPosting.keySet());//sort by the city name
             for(String s: t) {
-                bw.write(cityPosting.get(s)+"\n");//write each city to the files
+                String pos="";
+                if(s.length()>3)
+                    pos=search(savePath,s.toLowerCase(),stem);
+                String[] split=cityPosting.get(s).split(",");
+                for(String doc:split){
+                    if(!pos.contains(doc))
+                        pos+=(","+doc);
+                }
+                bw.write(s+": " + pos+"\n");//write each city to the files
             }
             fw.flush();// flush and close the file
             bw.flush();
@@ -328,23 +324,30 @@ public class Indexer {
     private static void sort(String path, char stem){
         File file=new File(path);
         String[] fileList=file.list();//get list of all file in the path
+        Map<String,String> terms=new LinkedHashMap<>();
         for(String f: fileList){
             if(f.charAt(0)>='a' && f.charAt(0)<='z' && f.charAt(f.length()-5)==stem) {//check if it is a posting file
                 try {
                     String p = new String(Files.readAllBytes(Paths.get(path + "/" + f)), StandardCharsets.UTF_8);//read a posting file
                     String[] lines = p.split("\n");//split by lines
+                    for(int i=0;i<lines.length;i++){
+                        if(lines[i].split(":").length>1) {
+                            if(!terms.containsKey(lines[i].split(":")[0]))
+                                terms.put(lines[i].split(":")[0], lines[i].split(":")[1]);
+                            else{
+                                String temp=terms.get(lines[i].split(":")[0]);
+                                temp+=(","+lines[i].split(":")[1]);
+                                terms.replace(lines[i].split(":")[0],temp);
+                            }
+                        }
+                    }
                     FileWriter fw = new FileWriter(path + "/" + f);
                     BufferedWriter bw = new BufferedWriter(fw);
-                    TreeSet<String> t = new TreeSet<>(Arrays.asList(lines));//sort the lines by term
+                    TreeSet<String> t = new TreeSet<>(terms.keySet());//sort the lines by term
                     String curr = "-1";
-                    for (String s : t) {
-                        if (!curr.equals( s.split(":")[0])) {//if the term is different from the previous one
-                            curr = s.split(":")[0];//set the term as the current
-                            bw.write("\n" + s);//write the term and the posting
-                        } else {
-                            if(s.split(":").length>1)
-                                bw.write(","+s.split(":")[1]);//write only the the posting
-                        }
+                    int i=0;
+                    for (String term : t) {
+                        bw.write(term+":"+terms.get(term)+"\n");//write the term and the posting
                     }
                     fw.flush();//flush and close the file
                     bw.flush();
@@ -352,9 +355,48 @@ public class Indexer {
                     bw.close();
                 } catch (IOException e) {System.out.println(e.getMessage());}
             }
+            terms.clear();
         }
 
 
+    }
+
+    /**
+     *
+     * this function search a term in the posting file and return list of doc and locations
+     *
+     * @param path path where all posting files are
+     * @param toFind term to search
+     * @param toStem if stemming is on
+     * @return list of doc and locations which the term appears
+     */
+    private static String search(String path, String toFind, boolean toStem){
+        String fileName=toFind.charAt(0)+"";//get the file name
+        if (toStem)//add stem char
+            fileName+="b.txt";
+        else
+            fileName+="a.txt";
+        String p="";
+        try {
+            p = new String(Files.readAllBytes(Paths.get(path + "/" + fileName)), StandardCharsets.UTF_8);//read a posting file
+        }catch (IOException e){}
+        String[] lines=p.split("\n");
+        int start = 0;
+        int end = lines.length - 1;
+        while (start <= end) {//to a binary search
+            int middle = (start + end) / 2;
+            if (toFind.equals(lines[middle].split(":")[0])) {
+                return lines[middle].split(":")[1];
+            }
+            else if (toFind.compareTo(lines[middle].split(":")[0])<0) {
+                end = middle - 1;
+            }
+            else if (toFind.compareTo(lines[middle].split(":")[0])>0) {
+                start = middle + 1;
+            }
+
+        }
+        return "";//string not found
     }
 
 }

@@ -32,7 +32,7 @@ public class Model {
             rf.read(dataPath+"/"+name,isStem, savePath);//perform inverted index
         }
         Indexer.divide(savePath,isStem);//move the temporary posting file to permanent posting file
-        Indexer.moveCitytoDisk(savePath);//move the cities posting to the disk
+        Indexer.moveCitytoDisk(savePath,isStem);//move the cities posting to the disk
         return rf.docsNum;
     }
 

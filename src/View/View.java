@@ -102,7 +102,6 @@ public class View {
                 Set<String> langus=model.getLangs();
                 ObservableList<String> list= FXCollections.observableArrayList(langus);
                 langs.setItems(list);
-                langs.setPromptText("Languages");
             }
         }
     }

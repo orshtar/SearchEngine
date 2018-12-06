@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -24,8 +26,8 @@ public class Main extends Application{
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
+
         launch(args);
     }
 }
