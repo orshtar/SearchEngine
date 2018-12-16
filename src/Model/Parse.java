@@ -30,7 +30,7 @@ public class Parse {
      * @param language the language of the doc
      */
     public void parse(String doc, String docNO, String city, boolean stem,String language){
-        int position=0;
+        int position=0, docLen=0;
         String text = doc;
         text+=" , , , ,";
         String[] splitText = text.split(" ");//split the text by spaces
@@ -345,6 +345,7 @@ public class Parse {
                     }
                 }
                 if (!stopWords.contains(str.toLowerCase())) {//if the word is not a stop word
+                    docLen++;
                     if(stem && !Indexer.containsTerm(str)){//if the stem is on and the dictionary does not contains the term
                         stemmer.add(str.toCharArray(),str.toCharArray().length);
                         stemmer.stem();//stem the word
@@ -386,7 +387,7 @@ public class Parse {
             }
         }
         Indexer i=new Indexer();
-        i.invertIndex(terms,docNO,max,city,language);//call the indexer
+        i.invertIndex(terms,docNO,max,docLen,city,language);//call the indexer
     }
 
     /**

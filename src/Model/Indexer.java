@@ -36,8 +36,8 @@ public class Indexer {
      * @param city city of the doc
      * @param language language of the doc
      */
-    public void invertIndex(Map<String,String> map, String docNum, int max_tf,String city,String language){
-        docs.put(docNum,max_tf+","+map.size()+","+city+","+language);
+    public void invertIndex(Map<String,String> map, String docNum, int max_tf, int docLen, String city,String language){
+        docs.put(docNum,max_tf+","+map.size()+","+docLen+","+city+","+language);
         if(!language.equals("") && !languages.contains(language))
             languages.add(language);//adds the language to list of languages
         if(!city.equals("")){
