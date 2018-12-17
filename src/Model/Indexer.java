@@ -127,7 +127,7 @@ public class Indexer {
             for(String s: t) {
                 String pos="";
                 if(s.length()>3)
-                    pos=search(savePath,s.toLowerCase(),stem);
+                    pos=search(savePath,s.toLowerCase(),stem, s.toLowerCase().charAt(0)+"");
                 String[] split=cityPosting.get(s).split(",");
                 for(String doc:split){
                     if(!pos.contains(doc))
@@ -370,8 +370,7 @@ public class Indexer {
      * @param toStem if stemming is on
      * @return list of doc and locations which the term appears
      */
-    private static String search(String path, String toFind, boolean toStem){
-        String fileName=toFind.charAt(0)+"";//get the file name
+    public static String search(String path, String toFind, boolean toStem, String fileName){
         if (toStem)//add stem char
             fileName+="b.txt";
         else

@@ -318,6 +318,14 @@ public class Parse {
                                 skip=-1;//to the term once again
                             }
                         }
+                        if (str.contains(":")) {
+                            s = str.split(":");
+                            if (s.length > 1) {
+                                str = cleanTerm(s[0]);//clean the firs
+                                splitText[i]=cleanTerm(s[1]);//enter the second word
+                                skip=-1;//to the term once again
+                            }
+                        }
                         if (str.contains("`")) {
                             s = str.split("`");
                             if (s.length > 1) {
