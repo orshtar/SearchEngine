@@ -85,7 +85,7 @@ public class ReadFile {
                     while (docNO.charAt(i)!=' ' && docNO.charAt(i)!='<')
                         i++;
                     String[] strings=docNO.substring(0,i).split("-");//split the doc number by -
-                    if(strings.length>=2){
+                    /*if(strings.length>=2){
                         docNO=getFileName(strings[0]);//encode the file num
                         try {
                             docNO += ("-" + Integer.parseInt(strings[1]));//add the doc second part without zeros at the start
@@ -93,8 +93,8 @@ public class ReadFile {
                             docNO += ("-" +strings[1]);
                         }
                     }
-                    else
-                        docNO=docNO.substring(0,i);//save as is
+                    else*/
+                    docNO=docNO.substring(0,i);//save as is
                     String[] text2=text[1].split("</TEXT>");
                     Parse parser=new Parse();
                     docsNum++;
