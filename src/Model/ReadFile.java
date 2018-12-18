@@ -98,7 +98,7 @@ public class ReadFile {
                     String[] text2=text[1].split("</TEXT>");
                     Parse parser=new Parse();
                     docsNum++;
-                    parser.parse(text2[0],docNO,city, stem,language);//call the parser
+                    parser.parse(text2[0],docNO,city, stem,language, false);//call the parser
                 }
             }
             Indexer.moveToMem(savePath,stem);//move to disk the posting files of this file

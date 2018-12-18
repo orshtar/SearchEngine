@@ -139,7 +139,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){System.out.println(e.getMessage());}
+        } catch(IOException e){e.printStackTrace();}
         cityPosting.clear();//clear the city posting from main memory
     }
 
@@ -167,7 +167,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){System.out.println(e.getMessage());}
+        } catch(IOException e){e.printStackTrace();}
         postingFile.clear();//clear the term posting from main memory
         fileNum++;
         try {
@@ -180,7 +180,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){System.out.println(e.getMessage());}
+        } catch(IOException e){e.printStackTrace();}
         docs.clear();//clear the information about the city
     }
 
@@ -242,7 +242,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){System.out.println(e.getMessage());}
+        } catch(IOException e){e.printStackTrace();}
     }
 
     /**
@@ -286,7 +286,7 @@ public class Indexer {
                     }
                     File t=new File(path + "/" + f);//delete the temporary file
                     t.delete();
-                } catch (IOException e) {System.out.println(e.getMessage());
+                } catch (IOException e) {e.printStackTrace();
                 }
             }
         }
@@ -311,7 +311,7 @@ public class Indexer {
             bw.flush();
             fw.close();
             bw.close();
-        } catch(IOException e){System.out.println(e.getMessage());}
+        } catch(IOException e){e.printStackTrace();}
     }
 
     /**
@@ -353,7 +353,7 @@ public class Indexer {
                     bw.flush();
                     fw.close();
                     bw.close();
-                } catch (IOException e) {System.out.println(e.getMessage());}
+                } catch (IOException e) {e.printStackTrace();}
             }
             terms.clear();
         }

@@ -29,7 +29,7 @@ public class Parse {
      * @param stem boolean which shows if stemming is on
      * @param language the language of the doc
      */
-    public void parse(String doc, String docNO, String city, boolean stem,String language){
+    public Map<String, String> parse(String doc, String docNO, String city, boolean stem,String language, boolean isQ){
         int position=0, docLen=0;
         String text = doc;
         text+=" , , , ,";
@@ -394,8 +394,13 @@ public class Parse {
                 }
             }
         }
-        Indexer i=new Indexer();
-        i.invertIndex(terms,docNO,max,docLen,city,language);//call the indexer
+        if(!isQ) {
+            Indexer i = new Indexer();
+            i.invertIndex(terms, docNO, max, docLen, city, language);//call the indexer
+            return null;
+        }else{
+            return terms;
+        }
     }
 
     /**
@@ -556,7 +561,7 @@ public class Parse {
                 String line=sc.nextLine();//enter all the words to the kis
                 stopWords.add(line);
             }
-        } catch(FileNotFoundException e){System.out.println(e.getMessage());}
+        } catch(FileNotFoundException e){e.printStackTrace();}
 
     }
 

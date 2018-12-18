@@ -1,22 +1,21 @@
 package Model;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Ranker {
 
     private static double avdl;
     private static double N;
-    private static double k=1.6;
-    private static double b=0.75;
+    private static double k=1.65;
+    private static double b=0.85;
 
-    public void setAvdl(String path, boolean isStem){
+    public Map<String, Integer> setAvdl(String path, boolean isStem){
+        Map<String,Integer> m=new LinkedHashMap<>();
         String stem="a";
         if(isStem)
             stem="b";
@@ -31,16 +30,18 @@ public class Ranker {
                 String length=s.split(",")[2];
                 sum+=Double.parseDouble(length);
                 count++;
+                m.put(s.split(":")[0],Integer.parseInt(s.split(",")[2]));
             }
         }
         avdl=sum/count;
         N=count;
         System.out.println(N);
         System.out.println(avdl);
-
+        return m;
     }
 
     public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path){
+        Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
         List<String> visitedDocs=new LinkedList<>();
         int i=0;
@@ -48,56 +49,51 @@ public class Ranker {
         double min=1000;
         String minDoc="";
         for(String pos:postings){
-            String[] temp=pos.split(":");
-            if(temp.length>1){
-                String[] docs=temp[1].split(",");
-                for(String doc:docs){
-                    double bm=0;
-                    String docNo=doc.split("\\*")[0];
-                    if(!visitedDocs.contains(docNo)){
-                        int ql=query.split(" ").length;
-                        for(int j=i; j<ql; j++){
-                            List<String> visitedWords=new LinkedList<>();
-                            if(postings.get(j).contains(docNo)){
-                                if(!visitedWords.contains(query.split(" ")[j])) {
-                                    int countQ = getOccur(query.split(" ")[j], query);
-                                    int countD = doc.split("\\*").length-1;
-                                    int docLength=getDocL(docNo, isStem, path);
-                                    int df=docs.length;
-                                    double t=((k+1)*countD)/(countD+k*(1-b+b*(docLength/avdl)));
-                                    double log=Math.log((N+1)/df)/Math.log(2);
-                                    t=t*countQ*log;
-                                    bm+=t;
-                                    visitedWords.add(query.split(" ")[j]);
-                                }
-                            }
-                        }
-                        visitedDocs.add(docNo);
-                        if(count<50) {
-                            docRank.put(docNo, bm);
-                            if(bm<min) {
-                                min = bm;
-                                minDoc=docNo;
-                            }
-                            count++;
-                        }
-                        else if(bm>min){
-                            docRank.remove(minDoc,min);
-                            docRank.put(docNo,bm);
-                            min=1000;
-                            for(String key: docRank.keySet()){
-                                if(docRank.get(key)<min) {
-                                    min = docRank.get(key);
-                                    minDoc=key;
-                                }
-                            }
-                        }
-                    }
+            String[] docs=pos.split(",");
+            for(String doc:docs){
+                double bm=0;
+                String docNo=doc.split("\\*")[0];
+                int countQ = getOccur(query.split(" ")[i], query);
+                int countD = doc.split("\\*").length-1;
+                int docLength=docsLen.get(docNo);
+                int df=docs.length;
+                double t=((k+1)*countD)/(countD+k*(1-b+b*(docLength/avdl)));
+                double log=Math.log((N+1)/df)/Math.log(2);
+                t=t*countQ*log;
+                bm+=t;
+                if(docRank.containsKey(docNo)){
+                    double temp=docRank.get(docNo);
+                    temp+=bm;
+                    docRank.replace(docNo,temp);
+                }
+                else{
+                    docRank.put(docNo,bm);
                 }
             }
+            i++;
         }
-        for(String key:docRank.keySet())
+        List<String> sortedDocs=sort(docRank);
+        for(String key:sortedDocs)
             System.out.println(key+":"+docRank.get(key));
+    }
+
+    private List<String> sort(Map<String, Double> docRank) {
+        Map<Double,String> m=new LinkedHashMap<>();
+        for(String key:docRank.keySet()){
+            Double bm=docRank.get(key);
+            m.put(bm,key);
+        }
+        TreeSet<Double> t=new TreeSet<>(m.keySet());
+        TreeSet<Double> t2=(TreeSet)t.descendingSet();
+        List<String> docs=new LinkedList<>();
+        int i=0;
+        for(Double d:t2){
+            if(i==50)
+                break;
+            docs.add(m.get(d));
+            i++;
+        }
+        return docs;
     }
 
     private int getOccur(String w, String query) {
@@ -114,6 +110,23 @@ public class Ranker {
         String doc=Indexer.search(path,docNo,isStem,"docs");
         String length=doc.split(",")[2];
         return Integer.parseInt(length);
+    }
+
+    private Map<String, Double> docsLen(String path, boolean isStem){
+        Map<String,Double> m=new LinkedHashMap<>();
+        if(isStem)
+            path+=("/docsb.txt");
+        else
+            path+=("/docsa.txt");
+        String p="";
+        try{
+            p = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
+        }catch (IOException e){e.printStackTrace();}
+        String[] docs=p.split("\n");
+        for(String doc: docs){
+            m.put(doc.split(":")[0],Double.parseDouble(doc.split(",")[2]));
+        }
+        return m;
     }
 
 }
