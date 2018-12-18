@@ -41,8 +41,12 @@ public class Ranker {
     }
 
     public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path){
-        Map<String, Double> visitedDocs=new LinkedHashMap<>();
+        Map<String, Double> docRank=new LinkedHashMap<>();
+        List<String> visitedDocs=new LinkedList<>();
         int i=0;
+        int count=0;
+        double min=1000;
+        String minDoc="";
         for(String pos:postings){
             String[] temp=pos.split(":");
             if(temp.length>1){
@@ -50,7 +54,7 @@ public class Ranker {
                 for(String doc:docs){
                     double bm=0;
                     String docNo=doc.split("\\*")[0];
-                    if(!visitedDocs.containsKey(docNo)){
+                    if(!visitedDocs.contains(docNo)){
                         int ql=query.split(" ").length;
                         for(int j=i; j<ql; j++){
                             List<String> visitedWords=new LinkedList<>();
@@ -68,13 +72,32 @@ public class Ranker {
                                 }
                             }
                         }
-                        visitedDocs.put(docNo,bm);
+                        visitedDocs.add(docNo);
+                        if(count<50) {
+                            docRank.put(docNo, bm);
+                            if(bm<min) {
+                                min = bm;
+                                minDoc=docNo;
+                            }
+                            count++;
+                        }
+                        else if(bm>min){
+                            docRank.remove(minDoc,min);
+                            docRank.put(docNo,bm);
+                            min=1000;
+                            for(String key: docRank.keySet()){
+                                if(docRank.get(key)<min) {
+                                    min = docRank.get(key);
+                                    minDoc=key;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-        for(String key:visitedDocs.keySet())
-            System.out.println(key+":"+visitedDocs.get(key));
+        for(String key:docRank.keySet())
+            System.out.println(key+":"+docRank.get(key));
     }
 
     private int getOccur(String w, String query) {
@@ -92,4 +115,5 @@ public class Ranker {
         String length=doc.split(",")[2];
         return Integer.parseInt(length);
     }
+
 }
