@@ -371,10 +371,12 @@ public class Indexer {
      * @return list of doc and locations which the term appears
      */
     public static String search(String path, String toFind, boolean toStem, String fileName){
-        if (toStem)//add stem char
-            fileName+="b.txt";
-        else
-            fileName+="a.txt";
+        if(!fileName.equals("cities.txt")) {
+            if (toStem)//add stem char
+                fileName += "b.txt";
+            else
+                fileName += "a.txt";
+        }
         String p="";
         try {
             p = new String(Files.readAllBytes(Paths.get(path + "/" + fileName)), StandardCharsets.UTF_8);//read a posting file

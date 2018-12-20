@@ -35,8 +35,10 @@ public class Main {/*extends Application{
     public static void main(String[] args) {
 
         //launch(args);
-        Parse.initStopWords("d:/documents/users/shtaro/Documents/data/stop_words.txt");
+        Parse.initStopWords("C:\\Users\\or shtar\\Documents\\data\\stop_words.txt");
         Searcher s=new Searcher();
-        s.SearchQ("At a minimum, relevant documents must contain the following information:  year of Nobel prize award, document announces what is obviously a current award, no year is required.",false,false,"d:/documents/users/shtaro/Documents/folder");
+        List<String> cities=new LinkedList<>();
+        cities.add("MEXICO");
+        s.SearchQ("Nobel prize winners",false,false,"C:\\Users\\or shtar\\Documents\\folder",cities);
     }
 }

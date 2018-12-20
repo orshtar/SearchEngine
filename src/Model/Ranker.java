@@ -40,7 +40,7 @@ public class Ranker {
         return m;
     }
 
-    public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path){
+    public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path, List<String> cityPos){
         Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
         List<String> visitedDocs=new LinkedList<>();
@@ -51,23 +51,31 @@ public class Ranker {
         for(String pos:postings){
             String[] docs=pos.split(",");
             for(String doc:docs){
-                double bm=0;
+                boolean isDocCity=false;
                 String docNo=doc.split("\\*")[0];
-                int countQ = getOccur(query.split(" ")[i], query);
-                int countD = doc.split("\\*").length-1;
-                int docLength=docsLen.get(docNo);
-                int df=docs.length;
-                double t=((k+1)*countD)/(countD+k*(1-b+b*(docLength/avdl)));
-                double log=Math.log((N+1)/df)/Math.log(2);
-                t=t*countQ*log;
-                bm+=t;
-                if(docRank.containsKey(docNo)){
-                    double temp=docRank.get(docNo);
-                    temp+=bm;
-                    docRank.replace(docNo,temp);
+                for(String posC: cityPos){
+                    if(posC.contains(docNo+"*") || posC.contains(docNo+",") || posC.contains(docNo+"\n")){
+                        isDocCity=true;
+                        break;
+                    }
                 }
-                else{
-                    docRank.put(docNo,bm);
+                if(isDocCity || cityPos.size()==0) {
+                    double bm = 0;
+                    int countQ = getOccur(query.split(" ")[i], query);
+                    int countD = doc.split("\\*").length - 1;
+                    int docLength = docsLen.get(docNo);
+                    int df = docs.length;
+                    double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
+                    double log = Math.log((N + 1) / df) / Math.log(2);
+                    t = t * countQ * log;
+                    bm += t;
+                    if (docRank.containsKey(docNo)) {
+                        double temp = docRank.get(docNo);
+                        temp += bm;
+                        docRank.replace(docNo, temp);
+                    } else {
+                        docRank.put(docNo, bm);
+                    }
                 }
             }
             i++;
