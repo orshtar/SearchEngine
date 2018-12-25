@@ -36,8 +36,12 @@ public class Indexer {
      * @param city city of the doc
      * @param language language of the doc
      */
-    public void invertIndex(Map<String,String> map, String docNum, int max_tf, int docLen, String city,String language){
-        docs.put(docNum,max_tf+","+map.size()+","+docLen+","+city+","+language);
+    public void invertIndex(Map<String,String> map, String docNum, int max_tf, int docLen, String city,String language, Map<String, Integer> entities){
+        String entitie="";
+        for(String s: entities.keySet()){
+            entitie+=(s+"/"+entities.get(s)+"*");
+        }
+        docs.put(docNum,max_tf+","+map.size()+","+docLen+","+city+","+language+","+entitie);
         if(!language.equals("") && !languages.contains(language))
             languages.add(language);//adds the language to list of languages
         if(!city.equals("")){
@@ -400,4 +404,7 @@ public class Indexer {
         return "";//string not found
     }
 
+    public static Set<String> getCities() {
+        return cityPosting.keySet();
+    }
 }

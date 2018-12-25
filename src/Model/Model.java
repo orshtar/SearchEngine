@@ -77,4 +77,8 @@ public class Model {
     public Set<String> getLangs(){
         return Indexer.getLangs();
     }
+
+    public Set<String> getCities(){
+        return Indexer.getCities();
+    }
 }

@@ -3,20 +3,29 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="353.0" prefWidth="540.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="380.0" prefWidth="759.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
-      <CheckBox fx:id="stem" layoutX="56.0" layoutY="136.0" mnemonicParsing="false" text="Stem" />
-      <TextField fx:id="dataText" layoutX="56.0" layoutY="49.0" prefHeight="25.0" prefWidth="342.0" promptText="Data Set" />
-      <TextField fx:id="saveIn" layoutX="56.0" layoutY="85.0" prefHeight="25.0" prefWidth="342.0" promptText="Save at" />
-      <Button fx:id="browseData" layoutX="435.0" layoutY="49.0" mnemonicParsing="false" onAction="#browseData" text="..." />
-      <Button fx:id="browsePost" layoutX="435.0" layoutY="85.0" mnemonicParsing="false" onAction="#browseSave" text="..." />
-      <Button fx:id="search" layoutX="133.0" layoutY="188.0" mnemonicParsing="false" onAction="#Search" prefHeight="46.0" prefWidth="71.0" text="Start" />
-      <Button fx:id="reset" layoutX="50.0" layoutY="273.0" mnemonicParsing="false" onAction="#reset" text="Reset" />
-      <Button fx:id="showDict" layoutX="245.0" layoutY="273.0" mnemonicParsing="false" onAction="#showDict" text="Display Dictionary" />
-      <Button fx:id="saveDict" layoutX="120.0" layoutY="273.0" mnemonicParsing="false" onAction="#saveDict" text="Save Dictionary" />
-      <ComboBox fx:id="langs" layoutX="133.0" layoutY="132.0" prefWidth="150.0" promptText="Languages" />
+      <CheckBox fx:id="stem" layoutX="25.0" layoutY="123.0" mnemonicParsing="false" text="Stem" />
+      <TextField fx:id="dataText" layoutX="25.0" layoutY="49.0" prefHeight="25.0" prefWidth="280.0" promptText="Data Set" />
+      <TextField fx:id="saveIn" layoutX="25.0" layoutY="85.0" prefHeight="25.0" prefWidth="280.0" promptText="Save at" />
+      <Button fx:id="browseData" layoutX="324.0" layoutY="49.0" mnemonicParsing="false" onAction="#browseData" text="..." />
+      <Button fx:id="browsePost" layoutX="324.0" layoutY="85.0" mnemonicParsing="false" onAction="#browseSave" text="..." />
+      <Button fx:id="search" layoutX="120.0" layoutY="181.0" mnemonicParsing="false" onAction="#Index" prefHeight="38.0" prefWidth="91.0" text="Start Indexing" />
+      <Button fx:id="reset" layoutX="28.0" layoutY="270.0" mnemonicParsing="false" onAction="#reset" text="Reset" />
+      <Button fx:id="showDict" layoutX="204.0" layoutY="270.0" mnemonicParsing="false" onAction="#showDict" text="Display Dictionary" />
+      <Button fx:id="saveDict" layoutX="90.0" layoutY="270.0" mnemonicParsing="false" onAction="#saveDict" text="Save Dictionary" />
+      <ComboBox fx:id="langs" layoutX="90.0" layoutY="119.0" prefWidth="150.0" promptText="Languages" />
+      <Separator layoutX="369.0" layoutY="7.0" orientation="VERTICAL" prefHeight="366.0" prefWidth="1.0" />
+      <TextField fx:id="queryText" layoutX="392.0" layoutY="49.0" prefHeight="25.0" prefWidth="262.0" promptText="Query" />
+      <TextField fx:id="queryPath" layoutX="392.0" layoutY="85.0" prefHeight="25.0" prefWidth="262.0" promptText="Queries File" />
+      <Button fx:id="browseQ" layoutX="670.0" layoutY="85.0" mnemonicParsing="false" onAction="#browseQueryFile" text="..." />
+      <Button fx:id="SearchQuery" layoutX="489.0" layoutY="188.0" mnemonicParsing="false" onAction="#searchQuery" prefHeight="38.0" prefWidth="68.0" text="Search" />
+      <CheckBox fx:id="isSemantic" layoutX="392.0" layoutY="123.0" mnemonicParsing="false" text="Semantic Search" />
+      <ComboBox fx:id="cities" layoutX="523.0" layoutY="119.0" prefHeight="25.0" prefWidth="129.0" promptText="Cities" />
+      <Button fx:id="saveResults" layoutX="392.0" layoutY="270.0" mnemonicParsing="false" text="Save Results" />
    </children>
 </Pane>

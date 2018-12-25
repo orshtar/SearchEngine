@@ -13,6 +13,7 @@ import java.util.Set;
 import Model.Model;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -31,6 +32,14 @@ public class View {
     private TextField saveIn;
     @FXML
     private CheckBox stem;
+    @FXML
+    private CheckBox isSemantic;
+    @FXML
+    private TextField queryText;
+    @FXML
+    private TextField queryPath;
+    @FXML
+    private ComboBox<String> citiess;
 
     private Model model;
 
@@ -56,7 +65,7 @@ public class View {
      * and pass the paths to the model
      *
      */
-    public void Search(){
+    public void Index(){
         dataPath=dataText.getText();
         savePath=saveIn.getText();
         if(dataPath.equals("") || savePath.equals("")){//check if the user entered the paths
@@ -177,5 +186,42 @@ public class View {
      */
     public void saveDict(){
         model.saveDict(savePath, stem.isSelected());
+    }
+
+    public void setCities() {
+        Set<String> cities=model.getCities();
+        ObservableList<String> list2= FXCollections.observableArrayList(cities);
+        citiess.setItems(list2);
+    }
+
+    public void searchQuery(){
+        if(queryText.getText().equals("")){
+
+        }
+        else{
+
+        }
+    }
+
+    public void browseQueryFile(){
+        FileChooser fc=new FileChooser();
+        fc.setTitle("Select Queries File");
+        //fc.setInitialDirectory(new File("C:"));
+        File f=fc.showOpenDialog(new Stage());
+        if(f!=null)
+            queryPath.setText(f.getPath());
+    }
+
+    public void saveResults(){
+        DirectoryChooser dc=new DirectoryChooser();
+        dc.setTitle("Select location");
+        dc.setInitialDirectory(new File("C:"));
+        File f=dc.showDialog(new Stage());
+        String location="";
+        if(f!=null)
+           location=f.getPath();
+        if(!location.equals("")){
+
+        }
     }
 }

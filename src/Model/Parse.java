@@ -30,6 +30,7 @@ public class Parse {
      * @param language the language of the doc
      */
     public Map<String, String> parse(String doc, String docNO, String city, boolean stem,String language, boolean isQ){
+        Map<String, Integer> entities = new LinkedHashMap<>();
         int position=0, docLen=0;
         String text = doc;
         text+=" , , , ,";
@@ -395,12 +396,50 @@ public class Parse {
             }
         }
         if(!isQ) {
+            for(String t: terms.keySet()){
+                if(t.equals(t.toUpperCase()))
+                    entities.put(t,0);
+            }
+            entities=findDominant(entities);
             Indexer i = new Indexer();
-            i.invertIndex(terms, docNO, max, docLen, city, language);//call the indexer
+            i.invertIndex(terms, docNO, max, docLen, city, language, entities);//call the indexer
             return null;
         }else{
             return terms;
         }
+    }
+
+    private Map<String, Integer> findDominant(Map<String, Integer> entities) {
+        Map<Integer,List<String>> m=new LinkedHashMap<>();
+        for(String key:entities.keySet()){
+            String post=terms.get(key);
+            int f=post.split("\\*").length;
+            if(m.containsKey((f))){
+                List<String> temp=m.get(f);
+                temp.add(key);
+                m.replace(f,temp);
+            }
+            else {
+                List<String> temp=new LinkedList<>();
+                temp.add(key);
+                m.put(f, temp);
+            }
+        }
+        TreeSet<Integer> t=new TreeSet<>(m.keySet());
+        TreeSet<Integer> t2=(TreeSet)t.descendingSet();
+        Map<String, Integer> ans=new LinkedHashMap<>();
+        int i=0;
+        for(Integer f:t2){
+            if(i>=5)
+                break;
+            for(String entity:m.get(f)){
+                if(i>=5)
+                    break;
+                ans.put(entity, f);
+                i++;
+            }
+        }
+        return ans;
     }
 
     /**

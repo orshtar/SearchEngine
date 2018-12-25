@@ -43,11 +43,7 @@ public class Ranker {
     public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path, List<String> cityPos){
         Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
-        List<String> visitedDocs=new LinkedList<>();
         int i=0;
-        int count=0;
-        double min=1000;
-        String minDoc="";
         for(String pos:postings){
             String[] docs=pos.split(",");
             for(String doc:docs){
