@@ -40,7 +40,7 @@ public class Ranker {
         return m;
     }
 
-    public void rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path, List<String> cityPos){
+    public List<String> rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path, List<String> cityPos){
         Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
         int i=0;
@@ -77,8 +77,7 @@ public class Ranker {
             i++;
         }
         List<String> sortedDocs=sort(docRank);
-        for(String key:sortedDocs)
-            System.out.println(key+":"+docRank.get(key));
+        return sortedDocs;
     }
 
     private List<String> sort(Map<String, Double> docRank) {

@@ -27,7 +27,7 @@ public class Main extends Application{
         FXMLLoader fxmlLoader=new FXMLLoader();
         Parent root = fxmlLoader.load(getClass().getResource("View.fxml").openStream());
         View v= fxmlLoader.getController();
-        v.setCities();
+        //v.setCities();
         primaryStage.setTitle("Search Engine");
         Scene scene = new Scene(root, 700, 400);
         primaryStage.setScene(scene);

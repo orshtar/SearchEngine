@@ -404,7 +404,4 @@ public class Indexer {
         return "";//string not found
     }
 
-    public static Set<String> getCities() {
-        return cityPosting.keySet();
-    }
 }

@@ -8,6 +8,10 @@ import javafx.scene.control.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 
 import Model.Model;
@@ -125,8 +129,10 @@ public class View {
         dc.setTitle("Open data set");
         dc.setInitialDirectory(new File("C:"));
         File f=dc.showDialog(new Stage());
-        if(f!=null)
+        if(f!=null) {
             dataText.setText(f.getPath());
+            dataPath=f.getPath();
+        }
     }
 
     /**
@@ -139,8 +145,10 @@ public class View {
         dc.setTitle("Open save location");
         dc.setInitialDirectory(new File("C:"));
         File f=dc.showDialog(new Stage());
-        if(f!=null)
+        if(f!=null) {
             saveIn.setText(f.getPath());
+            savePath=f.getPath();
+        }
     }
 
     /**
@@ -189,16 +197,42 @@ public class View {
     }
 
     public void setCities() {
-        Set<String> cities=model.getCities();
-        ObservableList<String> list2= FXCollections.observableArrayList(cities);
-        citiess.setItems(list2);
-    }
-
-    public void searchQuery(){
-        if(queryText.getText().equals("")){
-
+        if(!savePath.equals("")) {
+            Set<String> cities = model.getCities(savePath);
+            ObservableList<String> list2 = FXCollections.observableArrayList(cities);
+            citiess.setItems(list2);
         }
         else{
+            Alert al = new Alert(Alert.AlertType.INFORMATION);//show finish alert
+            al.setHeaderText(null);
+            al.setContentText("Please insert save location!");
+            al.showAndWait();
+        }
+    }
+
+    public void searchTextQuery(){
+        if(queryText.getText().equals("")){
+            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            al.setHeaderText(null);
+            al.setContentText("Please type a query!");
+            al.showAndWait();
+        }
+        else{
+            List<String> selectedCities=citiess.getItems();
+            List<String> returnedDocs=model.searchQuery(queryText.getText(),stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
+
+        }
+    }
+
+    public void searchFileQuery(){
+        if(queryPath.getText().equals("")){
+            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            al.setHeaderText(null);
+            al.setContentText("Please insert queries file!");
+            al.showAndWait();
+        }
+        else{
+
 
         }
     }

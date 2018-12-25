@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Searcher {
 
-    public void SearchQ(String query, boolean isStem, boolean isSemantic, String postPath, List<String> cities){
+    public List<String> SearchQ(String query, boolean isStem, boolean isSemantic, String postPath, List<String> cities){
         Parse p=new Parse();
         Map<String,String> q=p.parse(query,"","",isStem,"",true);
         List<String> pos=new LinkedList<>();
@@ -23,6 +23,7 @@ public class Searcher {
             pos.add(posting);
         }
         Ranker r=new Ranker();
-        r.rank(pos,isSemantic,query,isStem,postPath,postingCity);
+        List<String> docs=r.rank(pos,isSemantic,query,isStem,postPath,postingCity);
+        return docs;
     }
 }
