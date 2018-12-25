@@ -49,7 +49,7 @@ public class View {
 
     private String dataPath;
     private String savePath;
-
+    private List<String> returnedDocs;
 
     /**
      *
@@ -82,16 +82,13 @@ public class View {
         else {
             boolean isStem = stem.isSelected();//get if to do stemming
             File dataSet = new File(dataPath);
-            String corpusPath = "";
             String stpPath = "";
             for (String s : dataSet.list()) {//separate the path of data to path to stop word and path to the file
                 File f = new File(dataPath + "/" + s);
-                if (f.isDirectory())
-                    corpusPath = dataPath + "/" + s;
-                else
+                if (!f.isDirectory())
                     stpPath = dataPath + "/" + s;
             }
-            if(corpusPath.equals("") || stpPath.equals("")){//if the stop word is missing or the files
+            if( stpPath.equals("")){//if the stop word is missing
                 Alert al=new Alert(Alert.AlertType.ERROR);
                 al.setContentText("Path not found");
                 al.showAndWait();
@@ -100,7 +97,7 @@ public class View {
             }
             else {
                 Long start = System.currentTimeMillis();//start counter
-                int docNum = model.Search(corpusPath, stpPath, isStem, savePath);//call the model
+                int docNum = model.Search(dataPath, stpPath, isStem, savePath);//call the model
                 Long end = System.currentTimeMillis();//end counter
                 double t = end - start;
                 t = t / 1000;
@@ -211,6 +208,7 @@ public class View {
     }
 
     public void searchTextQuery(){
+        returnedDocs.clear();
         if(queryText.getText().equals("")){
             Alert al = new Alert(Alert.AlertType.INFORMATION);
             al.setHeaderText(null);
@@ -219,12 +217,14 @@ public class View {
         }
         else{
             List<String> selectedCities=citiess.getItems();
-            List<String> returnedDocs=model.searchQuery(queryText.getText(),stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
+            int randomID = (int)(Math.random() * 998 + 1);
+            returnedDocs=model.searchQuery(queryText.getText(),randomID+"",stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
 
         }
     }
 
     public void searchFileQuery(){
+        returnedDocs.clear();
         if(queryPath.getText().equals("")){
             Alert al = new Alert(Alert.AlertType.INFORMATION);
             al.setHeaderText(null);
@@ -232,8 +232,8 @@ public class View {
             al.showAndWait();
         }
         else{
-
-
+            List<String> selectedCities=citiess.getItems();
+            //returnedDocs=model.searchFileQuery(queryPath.getText(),stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
         }
     }
 

@@ -29,7 +29,7 @@ public class Main extends Application{
         View v= fxmlLoader.getController();
         //v.setCities();
         primaryStage.setTitle("Search Engine");
-        Scene scene = new Scene(root, 700, 400);
+        Scene scene = new Scene(root, 800, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
