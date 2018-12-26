@@ -27,6 +27,6 @@
       <CheckBox fx:id="isSemantic" layoutX="346.0" layoutY="123.0" mnemonicParsing="false" text="Semantic Search" />
       <Button fx:id="saveResults" layoutX="454.0" layoutY="207.0" mnemonicParsing="false" text="Save Results" />
       <Button fx:id="searchFileQuery" layoutX="674.0" layoutY="85.0" mnemonicParsing="false" onAction="#searchFileQuery" prefHeight="25.0" prefWidth="58.0" text="Search" />
-      <ComboBox fx:id="citiess" layoutX="473.0" layoutY="119.0" onMouseClicked="#setCities" prefHeight="25.0" prefWidth="122.0" promptText="cities" />
+      <ComboBox fx:id="citiess" layoutX="481.0" layoutY="119.0" onMouseClicked="#setCities" prefHeight="25.0" prefWidth="119.0" promptText="Cities" />
    </children>
 </Pane>

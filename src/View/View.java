@@ -43,7 +43,7 @@ public class View {
     @FXML
     private TextField queryPath;
     @FXML
-    private ComboBox<String> citiess;
+    private ComboBox<CheckMenuItem> citiess;
 
     private Model model;
 
@@ -194,16 +194,19 @@ public class View {
     }
 
     public void setCities() {
-        if(!savePath.equals("")) {
-            Set<String> cities = model.getCities(savePath);
-            ObservableList<String> list2 = FXCollections.observableArrayList(cities);
-            citiess.setItems(list2);
-        }
-        else{
-            Alert al = new Alert(Alert.AlertType.INFORMATION);//show finish alert
-            al.setHeaderText(null);
-            al.setContentText("Please insert save location!");
-            al.showAndWait();
+        if(citiess.getItems().size()==0) {
+            if (!savePath.equals("")) {
+                Set<String> cities = model.getCities(savePath);
+                for (String city : cities) {
+                    CheckMenuItem c = new CheckMenuItem(city);
+                    citiess.getItems().add(c);
+                }
+            } else {
+                Alert al = new Alert(Alert.AlertType.INFORMATION);
+                al.setHeaderText(null);
+                al.setContentText("Please insert save location!");
+                al.showAndWait();
+            }
         }
     }
 
@@ -216,9 +219,9 @@ public class View {
             al.showAndWait();
         }
         else{
-            List<String> selectedCities=citiess.getItems();
+            //List<String> selectedCities=citiess.getItems();
             int randomID = (int)(Math.random() * 998 + 1);
-            returnedDocs=model.searchQuery(queryText.getText(),randomID+"",stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
+            //returnedDocs=model.searchQuery(queryText.getText(),randomID+"",stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
 
         }
     }
@@ -232,7 +235,7 @@ public class View {
             al.showAndWait();
         }
         else{
-            List<String> selectedCities=citiess.getItems();
+            //List<String> selectedCities=citiess.getItems();
             //returnedDocs=model.searchFileQuery(queryPath.getText(),stem.isSelected(),isSemantic.isSelected(),savePath,selectedCities);
         }
     }
