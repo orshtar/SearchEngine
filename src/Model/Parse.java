@@ -397,7 +397,7 @@ public class Parse {
         }
         if(!isQ) {
             for(String t: terms.keySet()){
-                if(t.equals(t.toUpperCase()))
+                if(Character.isUpperCase(t.charAt(0)))
                     entities.put(t,0);
             }
             entities=findDominant(entities);

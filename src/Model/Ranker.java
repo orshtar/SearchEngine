@@ -35,8 +35,6 @@ public class Ranker {
         }
         avdl=sum/count;
         N=count;
-        System.out.println(N);
-        System.out.println(avdl);
         return m;
     }
 

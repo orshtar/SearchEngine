@@ -22,6 +22,8 @@ import java.util.List;
 
 public class Main extends Application{
 
+    public static Stage primStage;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader fxmlLoader=new FXMLLoader();
@@ -31,6 +33,7 @@ public class Main extends Application{
         primaryStage.setTitle("Search Engine");
         Scene scene = new Scene(root, 800, 400);
         primaryStage.setScene(scene);
+        primStage=primaryStage;
         primaryStage.show();
     }
 

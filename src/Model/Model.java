@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -100,14 +97,15 @@ public class Model {
         return ans;
     }
 
-    public List<String> searchQuery(String query, String qNum, boolean isStem, boolean isSemantic, String savePath, List<String> selectedCities) {
+    public List<String> searchQuery(String query, String qNum, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
+        Parse.initStopWords(dataPath);
         Searcher s=new Searcher();
         List<String> docs=s.SearchQ(query,isStem,isSemantic,savePath,selectedCities);
         return docs;
     }
 
-    public List<List<String>> searchFileQuery(String path, boolean isStem, boolean isSemantic, String savePath, List<String> selectedCities){
-        List<List<String>> returnedDocs=new LinkedList<>();
+    public Map<String,List<String>> searchFileQuery(String path, boolean isStem, boolean isSemantic, String stpPath, String savePath, List<String> selectedCities){
+        Map<String,List<String>> returnedDocs=new LinkedHashMap<>();
         String f="";
         try{
             f = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
@@ -116,7 +114,7 @@ public class Model {
         String qNum="",query="";
         for(String q:queries){
             if(!q.equals("")) {
-                String[] num=q.split("<num>");
+                String[] num=q.split("<num> Number: ");
                 if(num.length>1){
                     qNum=num[1].split("\n")[0];
                 }
@@ -124,10 +122,19 @@ public class Model {
                 if (title.length > 1) {
                     query=title[1].split("\n")[0];
                 }
-                List<String> tempDocs=searchQuery(query,qNum,isStem,isSemantic,savePath,selectedCities);
-                returnedDocs.add(tempDocs);
+                List<String> tempDocs=searchQuery(query,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);
+                returnedDocs.put(qNum,tempDocs);
             }
         }
         return returnedDocs;
+    }
+
+    public String getEntities(String docNO, String savePath, boolean stem) {
+        String posDoc=Indexer.search(savePath,docNO,stem,"docs");
+        String[] psik=posDoc.split(",");
+        String entities=psik[psik.length-1];
+        entities=entities.replaceAll("/",": ");
+        entities=entities.replaceAll("\\*","\n");
+        return entities;
     }
 }
