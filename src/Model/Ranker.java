@@ -38,11 +38,11 @@ public class Ranker {
         return m;
     }
 
-    public List<String> rank(List<String> postings, boolean isSemantic, String query, boolean isStem, String path, List<String> cityPos){
+    public List<String> rank(Map<String,String> postings, String query, boolean isStem, String path, List<String> cityPos){
         Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
         int i=0;
-        for(String pos:postings){
+        for(String pos:postings.keySet()){
             String[] docs=pos.split(",");
             for(String doc:docs){
                 boolean isDocCity=false;
@@ -55,7 +55,7 @@ public class Ranker {
                 }
                 if(isDocCity || cityPos.size()==0) {
                     double bm = 0;
-                    int countQ = getOccur(query.split(" ")[i], query);
+                    int countQ =postings.get(pos).split("\\*").length;
                     int countD = doc.split("\\*").length - 1;
                     int docLength = docsLen.get(docNo);
                     int df = docs.length;

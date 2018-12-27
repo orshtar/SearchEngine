@@ -64,6 +64,7 @@ public class View {
     private String savePath;
     private List<String> returnedDocsSingle;
     private Map<String,List<String>> returnedDocsMulti;
+    private String currentQID;
     /**
      *
      * a simple constructor
@@ -146,7 +147,8 @@ public class View {
             saveIn.setText(f.getPath());
             savePath=f.getPath();
         }
-        setCities();
+        if(!model.isPostingEmpty(savePath))
+            setCities();
     }
 
     /**
@@ -182,7 +184,7 @@ public class View {
         try{
             f=new File(savePath+"/dictionary"+c+".txt");
             Desktop.getDesktop().open(f);
-        }catch(IOException e){System.out.println(e.getMessage());}
+        }catch(IOException e){e.printStackTrace();}
     }
 
     /**
@@ -208,7 +210,7 @@ public class View {
 
     public void checkCities(){
         if(citiess.getItems().size()==0){
-            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            Alert al = new Alert(Alert.AlertType.WARNING);
             al.setHeaderText(null);
             al.setContentText("Please insert save location!");
             al.showAndWait();
@@ -217,14 +219,15 @@ public class View {
 
     public void searchTextQuery(){
         returnedDocsSingle.clear();
+        returnedDocsMulti.clear();
         if(queryText.getText().equals("")){
-            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            Alert al = new Alert(Alert.AlertType.WARNING);
             al.setHeaderText(null);
             al.setContentText("Please type a query!");
             al.showAndWait();
         }
         else if(dataPath.equals("")){
-            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            Alert al = new Alert(Alert.AlertType.WARNING);
             al.setHeaderText(null);
             al.setContentText("Please insert path to data");
             al.showAndWait();
@@ -233,6 +236,7 @@ public class View {
             String stpPath=checkDataPath(dataPath);
             List<String> selectedCities=getSelectedCities();
             int randomID = (int)(Math.random() * 998 + 1);
+            currentQID=randomID+"";
             returnedDocsSingle=model.searchQuery(queryText.getText(),randomID+"",stem.isSelected(),isSemantic.isSelected(),stpPath,savePath,selectedCities);
             Group g = new Group();
             GridPane grid = new GridPane();
@@ -263,7 +267,7 @@ public class View {
     private void setLabels(List<String> docs, GridPane g) {
         int i=0;
         for(String docNO:docs){
-            Label l=new Label(docNO.replaceAll(" ",""));
+            Label l=new Label(docNO);
             l.setOnMouseClicked((e) -> showEntities(l.getText()));
             g.addRow(i,l);
             g.setPadding(new Insets(10,10,10,10));
@@ -302,14 +306,15 @@ public class View {
 
     public void searchFileQuery(){
         returnedDocsMulti.clear();
+        returnedDocsSingle.clear();
         if(queryPath.getText().equals("")){
-            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            Alert al = new Alert(Alert.AlertType.ERROR);
             al.setHeaderText(null);
             al.setContentText("Please insert queries file!");
             al.showAndWait();
         }
         else if(dataPath.equals("")){
-            Alert al = new Alert(Alert.AlertType.INFORMATION);
+            Alert al = new Alert(Alert.AlertType.ERROR);
             al.setHeaderText(null);
             al.setContentText("Please insert path to data");
             al.showAndWait();
@@ -363,22 +368,35 @@ public class View {
     public void browseQueryFile(){
         FileChooser fc=new FileChooser();
         fc.setTitle("Select Queries File");
-        //fc.setInitialDirectory(new File("C:"));
         File f=fc.showOpenDialog(new Stage());
         if(f!=null)
             queryPath.setText(f.getPath());
     }
 
     public void saveResults(){
-        DirectoryChooser dc=new DirectoryChooser();
-        dc.setTitle("Select location");
-        dc.setInitialDirectory(new File("C:"));
-        File f=dc.showDialog(new Stage());
-        String location="";
-        if(f!=null)
-           location=f.getPath();
-        if(!location.equals("")){
-
+        if(returnedDocsSingle.isEmpty() && returnedDocsMulti.isEmpty()){
+            Alert al = new Alert(Alert.AlertType.WARNING);
+            al.setHeaderText(null);
+            al.setContentText("Please search a query before saving results!");
+            al.showAndWait();
+        }
+        else {
+            DirectoryChooser dc = new DirectoryChooser();
+            dc.setTitle("Select location");
+            File f = dc.showDialog(new Stage());
+            String location = "";
+            if (f != null)
+                location = f.getPath();
+            if (!location.equals("")) {
+                if (!returnedDocsMulti.isEmpty())
+                    model.saveResultsMulti(location, returnedDocsMulti, isSemantic.isSelected(), stem.isSelected());
+                else if (!returnedDocsSingle.isEmpty())
+                    model.saveResultsSingle(location, returnedDocsSingle, currentQID, isSemantic.isSelected(), stem.isSelected());
+                Alert al = new Alert(Alert.AlertType.INFORMATION);
+                al.setHeaderText(null);
+                al.setContentText("Results file saved");
+                al.showAndWait();
+            }
         }
     }
 }

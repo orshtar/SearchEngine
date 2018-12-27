@@ -33,7 +33,7 @@ public class CityObject {
             br = new BufferedReader(new InputStreamReader(url.openStream()));
             line=br.readLine();//read the city page in API
             br.close();
-        } catch (IOException e){}
+        } catch (IOException e){e.printStackTrace();}
         if(!line.equals("")) {
             String[] temp = line.split("name");
             if (temp.length >= 2) {

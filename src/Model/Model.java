@@ -1,6 +1,8 @@
 package Model;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -136,5 +138,60 @@ public class Model {
         entities=entities.replaceAll("/",": ");
         entities=entities.replaceAll("\\*","\n");
         return entities;
+    }
+
+    public boolean isPostingEmpty(String savePath) {
+        boolean ans=false;
+        File f=new File(savePath);
+        ans=f.list().length==0;
+        return ans;
+    }
+
+    public void saveResultsMulti(String location, Map<String, List<String>> returnedDocsMulti, boolean isSemantic, boolean isStem) {
+        String addChar="a";
+        if(isStem){
+            addChar="b";
+        }
+        if(isSemantic){
+            addChar+="s";
+        }
+        else
+            addChar+="n";
+        try {
+            FileWriter fw = new FileWriter(location + "/searchResults"+addChar+".txt");//open a dictionary file
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(String qID: returnedDocsMulti.keySet()){
+                for(String docNum: returnedDocsMulti.get(qID)){
+                    bw.write(qID+" 0 "+docNum+" 1 42.38 mt\n");
+                }
+            }
+            fw.flush();//flush and close the file
+            bw.flush();
+            fw.close();
+            bw.close();
+        } catch(IOException e){e.printStackTrace();}
+    }
+
+    public void saveResultsSingle(String location, List<String> returnedDocsSingle, String qID, boolean isSemantic, boolean isStem) {
+        String addChar="a";
+        if(isStem){
+            addChar="b";
+        }
+        if(isSemantic){
+            addChar+="s";
+        }
+        else
+            addChar+="n";
+        try {
+            FileWriter fw = new FileWriter(location + "/searchResults"+addChar+".txt");//open a dictionary file
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(String doc:returnedDocsSingle){
+                bw.write(qID+" 0 "+doc+" 1 42.38 mt\n");
+            }
+            fw.flush();//flush and close the file
+            bw.flush();
+            fw.close();
+            bw.close();
+        } catch(IOException e){e.printStackTrace();}
     }
 }

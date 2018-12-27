@@ -8,7 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <CheckBox fx:id="stem" layoutX="25.0" layoutY="123.0" mnemonicParsing="false" text="Stem" />
       <TextField fx:id="dataText" layoutX="25.0" layoutY="49.0" prefHeight="25.0" prefWidth="235.0" promptText="Data Set" />
@@ -26,7 +26,7 @@
       <Button fx:id="browseQ" layoutX="618.0" layoutY="85.0" mnemonicParsing="false" onAction="#browseQueryFile" text="..." />
       <Button fx:id="SearchTextQuery" layoutX="674.0" layoutY="49.0" mnemonicParsing="false" onAction="#searchTextQuery" prefHeight="25.0" prefWidth="58.0" text="Search" />
       <CheckBox fx:id="isSemantic" layoutX="346.0" layoutY="123.0" mnemonicParsing="false" text="Semantic Search" />
-      <Button fx:id="saveResults" layoutX="454.0" layoutY="207.0" mnemonicParsing="false" text="Save Results" />
+      <Button fx:id="saveResults" layoutX="454.0" layoutY="207.0" mnemonicParsing="false" onAction="#saveResults" text="Save Results" />
       <Button fx:id="searchFileQuery" layoutX="674.0" layoutY="85.0" mnemonicParsing="false" onAction="#searchFileQuery" prefHeight="25.0" prefWidth="58.0" text="Search" />
       <MenuButton fx:id="citiess" layoutX="492.0" layoutY="119.0" mnemonicParsing="false" onMouseClicked="#checkCities" prefHeight="25.0" prefWidth="108.0" text="Cities" />
    </children>
