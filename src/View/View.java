@@ -147,8 +147,17 @@ public class View {
             saveIn.setText(f.getPath());
             savePath=f.getPath();
         }
-        if(!model.isPostingEmpty(savePath))
+        if(!model.isPostingEmpty(savePath)) {
             setCities();
+            setLang();
+        }
+    }
+
+    private void setLang() {
+        Set<String> leng=model.getLang(savePath);
+        ObservableList<String> l=FXCollections.observableArrayList(leng);
+        langs.setItems(l);
+
     }
 
     /**

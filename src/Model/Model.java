@@ -194,4 +194,23 @@ public class Model {
             bw.close();
         } catch(IOException e){e.printStackTrace();}
     }
+
+    public Set<String> getLang(String savePath) {
+        String p="";
+        Set<String> ans=new HashSet<>();
+        try {
+            p = new String(Files.readAllBytes(Paths.get(savePath + "/docsa.txt")), StandardCharsets.UTF_8);//read a posting file
+        }catch(IOException e){
+            try{
+                p = new String(Files.readAllBytes(Paths.get(savePath + "/docsb.txt")), StandardCharsets.UTF_8);//read a posting file
+            }catch (IOException e1){e1.printStackTrace();}
+        }
+        String[] docs=p.split("\n");
+        for(String doc: docs){
+            String[] split=doc.split(",");
+            if(split.length>=5 && !split[4].equals(""))
+                ans.add(split[4]);
+        }
+        return  ans;
+    }
 }

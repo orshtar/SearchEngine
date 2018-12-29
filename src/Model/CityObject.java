@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -33,7 +34,11 @@ public class CityObject {
             br = new BufferedReader(new InputStreamReader(url.openStream()));
             line=br.readLine();//read the city page in API
             br.close();
-        } catch (IOException e){e.printStackTrace();}
+        } catch (FileNotFoundException e1){
+        }
+        catch (IOException e2){
+            e2.printStackTrace();
+        }
         if(!line.equals("")) {
             String[] temp = line.split("name");
             if (temp.length >= 2) {
