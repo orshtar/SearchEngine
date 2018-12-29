@@ -16,7 +16,6 @@ public class Parse {
 
     private static Set<String> stopWords;
     private static Set<Character> punctuation;
-    private static Map<String,String> terms;
     private int max=0;
 
     /**
@@ -31,6 +30,7 @@ public class Parse {
      */
     public Map<String, String> parse(String doc, String docNO, String city, boolean stem,String language, boolean isQ){
         Map<String, Integer> entities = new LinkedHashMap<>();
+        Map<String,String> terms=new LinkedHashMap<>();
         int position=0, docLen=0;
         String text = doc;
         text+=" , , , ,";
@@ -400,7 +400,7 @@ public class Parse {
                 if(Character.isUpperCase(t.charAt(0)))
                     entities.put(t,0);
             }
-            entities=findDominant(entities);
+            entities=findDominant(terms, entities);
             Indexer i = new Indexer();
             i.invertIndex(terms, docNO, max, docLen, city, language, entities);//call the indexer
             return null;
@@ -409,10 +409,10 @@ public class Parse {
         }
     }
 
-    private Map<String, Integer> findDominant(Map<String, Integer> entities) {
+    private Map<String, Integer> findDominant(Map<String, String> term, Map<String, Integer> entities) {
         Map<Integer,List<String>> m=new LinkedHashMap<>();
         for(String key:entities.keySet()){
-            String post=terms.get(key);
+            String post=term.get(key);
             int f=post.split("\\*").length;
             if(m.containsKey((f))){
                 List<String> temp=m.get(f);
@@ -564,7 +564,6 @@ public class Parse {
      */
     public static void initStopWords(String path){
         stopWords=new LinkedHashSet<>();
-        terms=new LinkedHashMap<>();
         punctuation=new LinkedHashSet<>();
         punctuation.add(':');
         punctuation.add(',');
@@ -604,15 +603,6 @@ public class Parse {
 
     }
 
-    /**
-     *
-     * remove the terms from main memory
-     *
-     */
-    public static void clear(){
-        if(terms!=null)
-            terms.clear();
-    }
 
     /**
      *
@@ -624,7 +614,6 @@ public class Parse {
             stopWords.clear();
         if(punctuation!=null)
             punctuation.clear();
-        clear();
     }
 
 }

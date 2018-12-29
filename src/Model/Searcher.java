@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -11,13 +12,23 @@ import java.util.Map;
 
 public class Searcher {
 
-    public List<String> SearchQ(String query, boolean isStem, boolean isSemantic, String postPath, List<String> cities){
+    public List<String> SearchQ(String query ,String desc, boolean isStem, boolean isSemantic, String postPath, List<String> cities){
         Parse p=new Parse();
         Map<String,String> q=p.parse(query,"","",isStem,"",true);
+        Map<String,String> d=p.parse(desc,"","",isStem,"",true);
         Map<String, String> pos=new LinkedHashMap<>();
+        Map<String, String> description=new LinkedHashMap<>();
         List<String> postingCity=new LinkedList<>();
         for(String city: cities){
             postingCity.add(Indexer.search(postPath,city,isStem,"cities.txt"));
+        }
+        for(String des:d.keySet()) {
+            String posting;
+            if (des.toLowerCase().charAt(0) >= 'a' && des.toLowerCase().charAt(0) <= 'z')
+                posting = Indexer.search(postPath, des.toLowerCase(), isStem, des.toLowerCase().charAt(0) + "");
+            else
+                posting = Indexer.search(postPath, des.toLowerCase(), isStem, "nums");
+            description.put(posting, d.get(des));
         }
         for(String term:q.keySet()){
             String posting;
@@ -34,8 +45,9 @@ public class Searcher {
                     br = new BufferedReader(new InputStreamReader(url.openStream()));
                     line = br.readLine();//read the city page in API
                     br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch(FileNotFoundException e){}
+                catch (IOException e1) {
+                    e1.printStackTrace();
                 }
                 if (!line.equals("")) {
                     String[] word = line.split("word");
@@ -53,7 +65,7 @@ public class Searcher {
             }
         }
         Ranker r=new Ranker();
-        List<String> docs=r.rank(pos,query,isStem,postPath,postingCity);
+        List<String> docs=r.rank(pos,query,description,isStem,postPath,postingCity);
         return docs;
     }
 }

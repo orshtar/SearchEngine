@@ -91,7 +91,7 @@ public class Model {
         String p="";
         try {
             p = new String(Files.readAllBytes(Paths.get(savePath + "/cities.txt")), StandardCharsets.UTF_8);//read a posting file
-        }catch(IOException e){e.printStackTrace();}
+        }catch(IOException e){return ans;}
         String[] lines=p.split("\n");
         for(String line:lines){
             ans.add(line.split(":")[0]);
@@ -99,10 +99,10 @@ public class Model {
         return ans;
     }
 
-    public List<String> searchQuery(String query, String qNum, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
+    public List<String> searchQuery(String query, String desc, String qNum, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
         Parse.initStopWords(dataPath);
         Searcher s=new Searcher();
-        List<String> docs=s.SearchQ(query,isStem,isSemantic,savePath,selectedCities);
+        List<String> docs=s.SearchQ(query,desc,isStem,isSemantic,savePath,selectedCities);
         return docs;
     }
 
@@ -114,7 +114,9 @@ public class Model {
         } catch(IOException e){e.printStackTrace();}
         String[] queries=f.split("<top>");
         String qNum="",query="";
+        int i=0;
         for(String q:queries){
+            i++;
             if(!q.equals("")) {
                 String[] num=q.split("<num> Number: ");
                 if(num.length>1){
@@ -124,9 +126,15 @@ public class Model {
                 if (title.length > 1) {
                     query=title[1].split("\n")[0];
                 }
-                List<String> tempDocs=searchQuery(query,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);
+                String description="";
+                String[] desc = q.split("<desc> Description: ");
+                if (desc.length > 1) {
+                    description=desc[1].split("\n<narr>")[0];
+                }
+                List<String> tempDocs=searchQuery(query,description,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);
                 returnedDocs.put(qNum,tempDocs);
             }
+            System.out.println(i);
         }
         return returnedDocs;
     }

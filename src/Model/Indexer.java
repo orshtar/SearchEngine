@@ -101,9 +101,7 @@ public class Indexer {
                     dictionary.put(term.toUpperCase(),newObj);
                 postingFile.put(term.toLowerCase(),term.toLowerCase()+":"+docNum+"*"+map.get(term));//add new line with the doc and the positions to the posting
             }
-
         }
-        Parse.clear();//clear the terms from the parse memory
     }
 
 

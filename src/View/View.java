@@ -246,7 +246,7 @@ public class View {
             List<String> selectedCities=getSelectedCities();
             int randomID = (int)(Math.random() * 998 + 1);
             currentQID=randomID+"";
-            returnedDocsSingle=model.searchQuery(queryText.getText(),randomID+"",stem.isSelected(),isSemantic.isSelected(),stpPath,savePath,selectedCities);
+            returnedDocsSingle=model.searchQuery(queryText.getText(),"",randomID+"",stem.isSelected(),isSemantic.isSelected(),stpPath,savePath,selectedCities);
             Group g = new Group();
             GridPane grid = new GridPane();
             setLabels(returnedDocsSingle,grid);
