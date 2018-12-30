@@ -17,6 +17,7 @@ public class Searcher {
         Map<String,String> q=p.parse(query,"","",isStem,"",true);
         Map<String,String> d=p.parse(desc,"","",isStem,"",true);
         Map<String, String> pos=new LinkedHashMap<>();
+        Map<String,String> posS=new LinkedHashMap<>();
         Map<String, String> description=new LinkedHashMap<>();
         List<String> postingCity=new LinkedList<>();
         for(String city: cities){
@@ -56,16 +57,19 @@ public class Searcher {
                             String[] temp1 = word[i].split("\":\"");
                             String[] temp2 = temp1[1].split("\",\"");
                             String term2 = temp2[0];
-                            posting = Indexer.search(postPath, term2.toLowerCase(), isStem, term2.toLowerCase().charAt(0) + "");
-                            if(!posting.equals(""))
-                                pos.put(posting, q.get(term));
+                            Map<String, String> parseSem=p.parse(term2,"","",isStem,"",true);
+                            for(String term3: parseSem.keySet()){
+                                posting = Indexer.search(postPath, term3.toLowerCase(), isStem, term3.toLowerCase().charAt(0) + "");
+                                if(!posting.equals(""))
+                                    posS.put(posting, q.get(term));
+                            }
                         }
                     }
                 }
             }
         }
         Ranker r=new Ranker();
-        List<String> docs=r.rank(pos,query,description,isStem,postPath,postingCity);
+        List<String> docs=r.rank(pos,posS,query,description,isStem,postPath,postingCity,isSemantic);
         return docs;
     }
 }

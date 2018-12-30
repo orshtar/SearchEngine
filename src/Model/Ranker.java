@@ -38,10 +38,11 @@ public class Ranker {
         return m;
     }
 
-    public List<String> rank(Map<String,String> postings, String query, Map<String, String> desc, boolean isStem, String path, List<String> cityPos){
+    public List<String> rank(Map<String,String> postings, Map<String,String> postingsS, String query, Map<String, String> desc, boolean isStem, String path, List<String> cityPos, boolean isSemantic){
         Map<String,Integer> docsLen=setAvdl(path,isStem);
         Map<String, Double> docRank=new LinkedHashMap<>();
         Map<String, Double> m=new LinkedHashMap<>();
+        Map<String, Double> rankS=new LinkedHashMap<>();
         for(String pos:postings.keySet()){
             String[] docs=pos.split(",");
             for(String doc:docs) {
@@ -49,6 +50,15 @@ public class Ranker {
                     boolean isDocCity = false;
                     String docNo = doc.split("\\*")[0];
                     String docPos = doc.split("\\*")[1];
+                    /*
+                    if(countWord.containsKey(docNo)){
+                        int temp=countWord.get(docNo);
+                        temp+=docPos.split("\\*").length;
+                        countWord.replace(docNo,temp);
+                    }
+                    else{
+                        countWord.put(docNo,docPos.split("\\*").length);
+                    }*/
                     for (String posC : cityPos) {
                         if (posC.contains(docNo + "*") || posC.contains(docNo + ",") || posC.contains(docNo + "\n")) {
                             isDocCity = true;
@@ -101,6 +111,59 @@ public class Ranker {
                 }
             }
         }
+        for(String pos:postingsS.keySet()){
+            /*
+            String[] docs=pos.split(",");
+            for(String doc:docs) {
+                String docNo = doc.split("\\*")[0];
+                String docPos = doc.split("\\*")[1];
+                if(countWord.containsKey(docNo)){
+                    int temp=countWord.get(docNo);
+                    temp+=docPos.split("\\*").length;
+                    countWord.replace(docNo,temp);
+                }
+                else{
+                    countWord.put(docNo,docPos.split("\\*").length);
+                }
+            }*/
+            String[] docs=pos.split(",");
+            for(String doc:docs) {
+                String docNo = doc.split("\\*")[0];
+                String docPos = doc.split("\\*")[1];
+                boolean isDocCity=false;
+                for (String posC : cityPos) {
+                    if (posC.contains(docNo + "*") || posC.contains(docNo + ",") || posC.contains(docNo + "\n")) {
+                        isDocCity = true;
+                        break;
+                    }
+                }
+                if (isDocCity || cityPos.size() == 0) {
+                    double bm = 0;
+                    int countQ = postingsS.get(pos).split("\\*").length;
+                    int countD = doc.split("\\*").length - 1;
+                    int docLength = docsLen.get(docNo);
+                    int df = docs.length;
+                    double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
+                    double log = Math.log((N + 1) / df) / Math.log(2);
+                    t = t * countQ * log;
+                    bm += t;
+                    m.clear();
+                    if (rankS.containsKey(docNo)) {
+                        double temp = rankS.get(docNo);
+                        temp += bm;
+                        rankS.replace(docNo, temp);
+                    } else {
+                        rankS.put(docNo, bm);
+                    }
+                }
+            }
+
+        }
+        /*
+        Map<String, Double> scoreS=new LinkedHashMap<>();
+        for(String docNo:rankS.keySet()){
+            scoreS.put(docNo,((double)rankS.get(docNo)/ docsLen.get(docNo)));
+        }*/
         Map<String, Double> descRank=new LinkedHashMap<>();
         Map<String, Double> sumDocs=new LinkedHashMap<>();
         Map<String, Double> docsSize=new LinkedHashMap<>();
@@ -125,8 +188,6 @@ public class Ranker {
                     double log = Math.log((N + 1) / df) / Math.log(2);
                     t = t * countQ * log;
                     bm += 0.6*t;
-                    double sum=0, sizeD=0, sizeQ=0;
-                    sum+=((countD/docLength)*((Math.log((docsLen.size()/docs.length)))/Math.log(2)));
                     if(descRank.containsKey(docNo)){
                         double temp=descRank.get(docNo);
                         temp+=bm;
@@ -139,17 +200,37 @@ public class Ranker {
             }
         }
         Map<String, Double> ranking=new LinkedHashMap<>();
+        double Wq=0.4;
+        double Wd=0.6;
+        double Ws=0;
+        if(isSemantic){
+            Wq=0.2;
+            Wd=0.5;
+            Ws=0.3;
+        }
         for(String word:docRank.keySet()){
+            double rank=Wq*docRank.get(word);
             if(descRank.containsKey(word)){
-                ranking.put(word,0.4*docRank.get(word)+0.6*descRank.get(word));
+                rank+=Wd*descRank.get(word);
             }
-            else{
-                ranking.put(word, 0.4*docRank.get(word));
+            if(rankS.containsKey(word)){
+                rank+=Ws*rankS.get(word);
             }
+            ranking.put(word,rank);
         }
         for(String des: descRank.keySet()){
             if(!ranking.containsKey(des)){
-                ranking.put(des,0.6*descRank.get(des));
+                double rank=Wd*descRank.get(des);
+                if(rankS.containsKey(des)){
+                    rank+=Ws*rankS.get(des);
+                }
+                ranking.put(des,rank);
+            }
+        }
+        for(String docNo:rankS.keySet()){
+            if(!ranking.containsKey(docNo)){
+                double rank=Ws*rankS.get(docNo);
+                ranking.put(docNo,rank);
             }
         }
         List<String> sortedDocs=sort(ranking);
