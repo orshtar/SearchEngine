@@ -3,22 +3,17 @@ package View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
@@ -65,6 +60,7 @@ public class View {
     private List<String> returnedDocsSingle;
     private Map<String,List<String>> returnedDocsMulti;
     private String currentQID;
+
     /**
      *
      * a simple constructor
@@ -153,11 +149,13 @@ public class View {
         }
     }
 
+    /**
+     * set language combo box with found languages
+     */
     private void setLang() {
-        Set<String> leng=model.getLang(savePath);
-        ObservableList<String> l=FXCollections.observableArrayList(leng);
+        Set<String> lang=model.getLang(savePath);    // get all languages found in corpus
+        ObservableList<String> l=FXCollections.observableArrayList(lang);
         langs.setItems(l);
-
     }
 
     /**
@@ -217,6 +215,9 @@ public class View {
         }
     }
 
+    /**
+     * alert to enter posting files location in order to load cities
+     */
     public void checkCities(){
         if(citiess.getItems().size()==0){
             Alert al = new Alert(Alert.AlertType.WARNING);
@@ -226,11 +227,14 @@ public class View {
         }
     }
 
+    /**
+     * search a single query
+     */
     public void searchTextQuery(){
         returnedDocsSingle.clear();
         returnedDocsMulti.clear();
         if(queryText.getText().equals("")){
-            Alert al = new Alert(Alert.AlertType.WARNING);
+            Alert al = new Alert(Alert.AlertType.WARNING);    // warn the query text field is empty
             al.setHeaderText(null);
             al.setContentText("Please type a query!");
             al.showAndWait();
@@ -238,18 +242,18 @@ public class View {
         else if(dataPath.equals("")){
             Alert al = new Alert(Alert.AlertType.WARNING);
             al.setHeaderText(null);
-            al.setContentText("Please insert path to data");
+            al.setContentText("Please insert path to data");   // warn path to corpus is empty
             al.showAndWait();
         }
         else{
-            String stpPath=checkDataPath(dataPath);
+            String stpPath=checkDataPath(dataPath);   // find path to stop words
             List<String> selectedCities=getSelectedCities();
-            int randomID = (int)(Math.random() * 998 + 1);
+            int randomID = (int)(Math.random() * 998 + 1);   //get random query id
             currentQID=randomID+"";
             returnedDocsSingle=model.searchQuery(queryText.getText(),"",randomID+"",stem.isSelected(),isSemantic.isSelected(),stpPath,savePath,selectedCities);
             Group g = new Group();
             GridPane grid = new GridPane();
-            setLabels(returnedDocsSingle,grid);
+            setLabels(returnedDocsSingle,grid);   // set new pop-up window with doc num found
             g.getChildren().add(grid);
             Stage stage = new Stage();
             stage.setScene(new Scene(g));
@@ -258,32 +262,45 @@ public class View {
         }
     }
 
+    /**
+     *
+     * @param docNO- entities of given doc num
+     */
     private void showEntities(String docNO){
-        String entities=model.getEntities(docNO, savePath,stem.isSelected());
+        String entities=model.getEntities(docNO, savePath,stem.isSelected()); // get entities from docs posting file
         Group g = new Group();
         GridPane grid = new GridPane();
         Label l=new Label(entities);
         l.setAlignment(Pos.CENTER);
         grid.addRow(0,l);
         g.getChildren().add(grid);
-        grid.setPadding(new Insets(10,10,10,10));
+        grid.setPadding(new Insets(10,10,10,10));  //set new pop-up window with entities and thair frequencies
         Stage stage = new Stage();
         stage.setScene(new Scene(g));
         stage.setTitle("Entities");
         stage.show();
     }
 
+    /**
+     *
+     * @param docs- doc nums relevant to the query
+     * @param g- the grid pane
+     */
     private void setLabels(List<String> docs, GridPane g) {
         int i=0;
         for(String docNO:docs){
             Label l=new Label(docNO);
-            l.setOnMouseClicked((e) -> showEntities(l.getText()));
+            l.setOnMouseClicked((e) -> showEntities(l.getText()));  //when user click on doc num- show its entities
             g.addRow(i,l);
             g.setPadding(new Insets(10,10,10,10));
             i++;
         }
     }
 
+    /**
+     *
+     * @return a list of the cities the user chose
+     */
     private List<String> getSelectedCities(){
         List<String> selectedCities=new LinkedList<>();
         for(MenuItem c:citiess.getItems()){
@@ -295,6 +312,11 @@ public class View {
         return selectedCities;
     }
 
+    /**
+     *
+     * @param dataPath- path to corpus and stop words
+     * @return a path to stop words text file
+     */
     private String checkDataPath(String dataPath){
         File dataSet = new File(dataPath);
         String stpPath = "";
@@ -313,28 +335,31 @@ public class View {
         return stpPath;
     }
 
+    /**
+     * search all queries in file
+     */
     public void searchFileQuery(){
         returnedDocsMulti.clear();
         returnedDocsSingle.clear();
         if(queryPath.getText().equals("")){
             Alert al = new Alert(Alert.AlertType.ERROR);
             al.setHeaderText(null);
-            al.setContentText("Please insert queries file!");
+            al.setContentText("Please insert queries file!");   // warn path to queries not found
             al.showAndWait();
         }
         else if(dataPath.equals("")){
             Alert al = new Alert(Alert.AlertType.ERROR);
             al.setHeaderText(null);
-            al.setContentText("Please insert path to data");
+            al.setContentText("Please insert path to data");   // warn path to corpus and stop words not found
             al.showAndWait();
         }
         else{
-            String stpPath=checkDataPath(dataPath);
+            String stpPath=checkDataPath(dataPath);    // get path to stop words file
             List<String> selectedCities=getSelectedCities();
             returnedDocsMulti=model.searchFileQuery(queryPath.getText(),stem.isSelected(),isSemantic.isSelected(),stpPath,savePath,selectedCities);
             Group g = new Group();
             GridPane grid = new GridPane();
-            setLabelsMulti(returnedDocsMulti,grid);
+            setLabelsMulti(returnedDocsMulti,grid);   //set pop-up window with relevant doc nums
             g.getChildren().add(grid);
             Stage stage = new Stage();
             stage.setScene(new Scene(g));
@@ -343,16 +368,21 @@ public class View {
         }
     }
 
+    /**
+     *
+     * @param returnedDocsMulti- map of relevant docs for each query
+     * @param grid- gris pane to change
+     */
     private void setLabelsMulti(Map<String, List<String>> returnedDocsMulti, GridPane grid) {
         int i=0, j=0;
         for(String qNum:returnedDocsMulti.keySet()){
-            ColumnConstraints col=new ColumnConstraints();
+            ColumnConstraints col=new ColumnConstraints();  // set a coumn for each query
             col.setHalignment(HPos.CENTER);
             grid.getColumnConstraints().add(col);
 
         }
         for(i=0; i<51; i++){
-            RowConstraints row=new RowConstraints();
+            RowConstraints row=new RowConstraints();  // set 50 rows for the docs
             row.setValignment(VPos.CENTER);
             grid.getRowConstraints().add(row);
         }
@@ -363,7 +393,7 @@ public class View {
             i++;
             for (String docNO : returnedDocsMulti.get(qNum)) {
                 Label l = new Label(docNO);
-                l.setOnMouseClicked((e) -> showEntities(l.getText()));
+                l.setOnMouseClicked((e) -> showEntities(l.getText()));    //when user click on doc num- show its entities
                 grid.add(l,j,i);
                 grid.setHgap(10);
                 grid.setVgap(2);
@@ -374,6 +404,9 @@ public class View {
         }
     }
 
+    /**
+     * browse for query file in explorer
+     */
     public void browseQueryFile(){
         FileChooser fc=new FileChooser();
         fc.setTitle("Select Queries File");
@@ -382,22 +415,25 @@ public class View {
             queryPath.setText(f.getPath());
     }
 
+    /**
+     * save search results to file in treceval format
+     */
     public void saveResults(){
         if(returnedDocsSingle.isEmpty() && returnedDocsMulti.isEmpty()){
             Alert al = new Alert(Alert.AlertType.WARNING);
             al.setHeaderText(null);
-            al.setContentText("Please search a query before saving results!");
+            al.setContentText("Please search a query before saving results!");   // warn that search need to be done before saving results
             al.showAndWait();
         }
         else {
             DirectoryChooser dc = new DirectoryChooser();
             dc.setTitle("Select location");
-            File f = dc.showDialog(new Stage());
+            File f = dc.showDialog(new Stage());   // choose location for file
             String location = "";
             if (f != null)
                 location = f.getPath();
             if (!location.equals("")) {
-                if (!returnedDocsMulti.isEmpty())
+                if (!returnedDocsMulti.isEmpty())    //check if single os multi query was searched
                     model.saveResultsMulti(location, returnedDocsMulti, isSemantic.isSelected(), stem.isSelected());
                 else if (!returnedDocsSingle.isEmpty())
                     model.saveResultsSingle(location, returnedDocsSingle, currentQID, isSemantic.isSelected(), stem.isSelected());

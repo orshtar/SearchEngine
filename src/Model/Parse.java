@@ -29,7 +29,7 @@ public class Parse {
      * @param language the language of the doc
      */
     public Map<String, String> parse(String doc, String docNO, String city, boolean stem,String language, boolean isQ){
-        Map<String, Integer> entities = new LinkedHashMap<>();
+        Map<String, Double> entities = new LinkedHashMap<>();   //save important entities for each doc
         Map<String,String> terms=new LinkedHashMap<>();
         int position=0, docLen=0;
         String text = doc;
@@ -397,45 +397,52 @@ public class Parse {
         }
         if(!isQ) {
             for(String t: terms.keySet()){
-                if(Character.isUpperCase(t.charAt(0)))
-                    entities.put(t,0);
+                if(Character.isUpperCase(t.charAt(0)))    //check if term is entity
+                    entities.put(t,0.0);                    //store in map
             }
-            entities=findDominant(terms, entities);
+            entities=findDominant(terms, entities);       //find 5 most dominant entities and dtore in map with their score
             Indexer i = new Indexer();
-            i.invertIndex(terms, docNO, max, docLen, city, language, entities);//call the indexer
+            i.invertIndex(terms, docNO, max, docLen, city, language, entities);   //call the indexer
             return null;
         }else{
-            return terms;
+            return terms;     //if the given "doc" is in fact a query, no need to index
         }
     }
 
-    private Map<String, Integer> findDominant(Map<String, String> term, Map<String, Integer> entities) {
-        Map<Integer,List<String>> m=new LinkedHashMap<>();
+    /**
+     *
+     * @param term- map of all terms in current doc
+     * @param entities- map of all entities(upper case words) in current doc
+     * @return- new map of 5 most dominant entities from 'entities' map
+     */
+    private Map<String, Double> findDominant(Map<String, String> term, Map<String, Double> entities) {
+        Map<Double,List<String>> m=new LinkedHashMap<>();
         for(String key:entities.keySet()){
             String post=term.get(key);
-            int f=post.split("\\*").length;
-            if(m.containsKey((f))){
-                List<String> temp=m.get(f);
+            double f=post.split("\\*").length;    //count frequency of each entity
+            double score=f/(term.size());
+            if(m.containsKey(score)){
+                List<String> temp=m.get(score);
                 temp.add(key);
-                m.replace(f,temp);
+                m.replace(score,temp);
             }
             else {
                 List<String> temp=new LinkedList<>();
                 temp.add(key);
-                m.put(f, temp);
+                m.put(score, temp);
             }
         }
-        TreeSet<Integer> t=new TreeSet<>(m.keySet());
-        TreeSet<Integer> t2=(TreeSet)t.descendingSet();
-        Map<String, Integer> ans=new LinkedHashMap<>();
+        TreeSet<Double> t=new TreeSet<>(m.keySet());
+        TreeSet<Double> t2=(TreeSet)t.descendingSet();    //sort entities frequencies in descending order
+        Map<String, Double> ans=new LinkedHashMap<>();
         int i=0;
-        for(Integer f:t2){
+        for(Double s:t2){
             if(i>=5)
                 break;
-            for(String entity:m.get(f)){
+            for(String entity:m.get(s)){
                 if(i>=5)
                     break;
-                ans.put(entity, f);
+                ans.put(entity, s);   //save only 5 entities
                 i++;
             }
         }

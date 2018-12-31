@@ -1,19 +1,27 @@
 package Model;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * this class ranks documents with a formula consists on BM25 and positions of words.
+ */
 public class Ranker {
 
     private static double avdl;
     private static double N;
     private static double k=1.4;
-    private static double b=0.70;
+    private static double b=0.55;
 
+    /**
+     *
+     * @param path- path to posting files
+     * @param isStem- is stemming has done
+     * @return  a map of doc number and its length
+     */
     public Map<String, Integer> setAvdl(String path, boolean isStem){
         Map<String,Integer> m=new LinkedHashMap<>();
         String stem="a";
@@ -33,77 +41,79 @@ public class Ranker {
                 m.put(s.split(":")[0],Integer.parseInt(s.split(",")[2]));
             }
         }
-        avdl=sum/count;
-        N=count;
+        avdl=sum/count;  // computes average doc length of all docs in corpus
+        N=count; // number of docs
         return m;
     }
 
-    public List<String> rank(Map<String,String> postings, Map<String,String> postingsS, String query, Map<String, String> desc, boolean isStem, String path, List<String> cityPos, boolean isSemantic){
-        Map<String,Integer> docsLen=setAvdl(path,isStem);
+    /**
+     *
+     * @param postings- map of posting of word and its occurences in the query
+     * @param postingsS- map of posting of semantic words and its occurences in the query(same as the original word)
+     * @param desc- map of posting of word in description and its occurences in the description
+     * @param isStem- is stemming had done
+     * @param path- path to posting files
+     * @param cityPos- postings of selected cities by user
+     * @param isSemantic- is semantic search done
+     * @return a list of relevant doc nums sorted by their rank
+     */
+    public List<String> rank(Map<String,String> postings, Map<String,String> postingsS, Map<String, String> desc, boolean isStem, String path, List<String> cityPos, boolean isSemantic){
+        Map<String,Integer> docsLen=setAvdl(path,isStem);  // get average docs length
         Map<String, Double> docRank=new LinkedHashMap<>();
         Map<String, Double> m=new LinkedHashMap<>();
         Map<String, Double> rankS=new LinkedHashMap<>();
-        for(String pos:postings.keySet()){
+        for(String pos:postings.keySet()){   // for each posting of word in query
             String[] docs=pos.split(",");
-            for(String doc:docs) {
+            for(String doc:docs) {     //for each doc
                 if (!doc.equals("")) {
                     boolean isDocCity = false;
                     String docNo = doc.split("\\*")[0];
                     String docPos = doc.split("\\*")[1];
-                    /*
-                    if(countWord.containsKey(docNo)){
-                        int temp=countWord.get(docNo);
-                        temp+=docPos.split("\\*").length;
-                        countWord.replace(docNo,temp);
-                    }
-                    else{
-                        countWord.put(docNo,docPos.split("\\*").length);
-                    }*/
                     for (String posC : cityPos) {
                         if (posC.contains(docNo + "*") || posC.contains(docNo + ",") || posC.contains(docNo + "\n")) {
-                            isDocCity = true;
+                            isDocCity = true;     // selected city appear in doc
                             break;
                         }
                     }
-                    if (isDocCity || cityPos.size() == 0) {
+                    if (isDocCity || cityPos.size() == 0) {  // if doc contains at least one selected city
                         double bm = 0;
-                        int countQ = postings.get(pos).split("\\*").length;
-                        int countD = doc.split("\\*").length - 1;
+                        int countQ = postings.get(pos).split("\\*").length;   // count occurences in query
+                        int countD = doc.split("\\*").length - 1;  // count occurences in doc
                         int docLength = docsLen.get(docNo);
                         int df = docs.length;
                         double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
                         double log = Math.log((N + 1) / df) / Math.log(2);
-                        t = t * countQ * log;
-                        bm += 0.55 * t;
+                        t = t * countQ * log;    //compute the bm formula
+                        bm += 0.65 * t;   //bm has 0.65 weight of total rank
                         m.clear();
-                        for (String pos2 : postings.keySet()) {
+                        for (String pos2 : postings.keySet()) {   // compare each word to other words in qurey (to find positions)
                             if (!postings.get(pos).equals(postings.get(pos2))) {
                                 double dist = 0;
-                                int realDist = minDist(postings.get(pos), postings.get(pos2));
+                                int realDist = minDist(postings.get(pos), postings.get(pos2));  // minimal distance between 2 words in query
                                 if (pos2.contains(docNo + "*")) {
                                     String temp1 = pos2.split(docNo + "\\*")[1];
                                     String temp2 = temp1.split(",")[0];
-                                    int minDist = minDist(docPos, temp2);
+                                    int minDist = minDist(docPos, temp2);   // minimal distance between the words in mutual document
                                     dist = realDist * (minDist - realDist + 1);
-                                    double posScore = 1.0 / (dist);
+                                    double posScore = 1.0 / (dist);    // compute position score for each pair of words
                                     if (m.containsKey(postings.get(pos2))) {
                                         double temp = m.get(postings.get(pos2));
                                         if (temp < posScore)
                                             m.replace(postings.get(pos2), posScore);
                                     } else
-                                        m.put(postings.get(pos2), posScore);
+                                        m.put(postings.get(pos2), posScore);    // keep map of position scores
                                 }
                             }
                         }
                         double sum = 0;
                         for (String p : m.keySet()) {
-                            sum += m.get(p);
+                            sum += m.get(p);     // sum position score of word with all other words
                         }
-                        bm += (0.45 * (sum));
+                        bm += (0.35 * (sum));    // position score has 0.35 weight of total rank
                         if (docRank.containsKey(docNo)) {
                             double temp = docRank.get(docNo);
                             temp += bm;
-                            docRank.replace(docNo, temp);
+                            docRank.replace(docNo, temp);     //save rank for each doc
                         } else {
                             docRank.put(docNo, bm);
                         }
@@ -111,47 +121,32 @@ public class Ranker {
                 }
             }
         }
-        for(String pos:postingsS.keySet()){
-            /*
+        for(String pos:postingsS.keySet()){     // for each semantic word *semantic words only have bm score*
             String[] docs=pos.split(",");
             for(String doc:docs) {
                 String docNo = doc.split("\\*")[0];
-                String docPos = doc.split("\\*")[1];
-                if(countWord.containsKey(docNo)){
-                    int temp=countWord.get(docNo);
-                    temp+=docPos.split("\\*").length;
-                    countWord.replace(docNo,temp);
-                }
-                else{
-                    countWord.put(docNo,docPos.split("\\*").length);
-                }
-            }*/
-            String[] docs=pos.split(",");
-            for(String doc:docs) {
-                String docNo = doc.split("\\*")[0];
-                String docPos = doc.split("\\*")[1];
                 boolean isDocCity=false;
                 for (String posC : cityPos) {
                     if (posC.contains(docNo + "*") || posC.contains(docNo + ",") || posC.contains(docNo + "\n")) {
-                        isDocCity = true;
+                        isDocCity = true;    // selected city appear in doc
                         break;
                     }
                 }
-                if (isDocCity || cityPos.size() == 0) {
+                if (isDocCity || cityPos.size() == 0) {    // if doc contains at least one selected city
                     double bm = 0;
-                    int countQ = postingsS.get(pos).split("\\*").length;
-                    int countD = doc.split("\\*").length - 1;
+                    int countQ = postingsS.get(pos).split("\\*").length;  // count occurences in query
+                    int countD = doc.split("\\*").length - 1;       // count occurences in doc
                     int docLength = docsLen.get(docNo);
                     int df = docs.length;
                     double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
                     double log = Math.log((N + 1) / df) / Math.log(2);
                     t = t * countQ * log;
-                    bm += t;
+                    bm += t;   //compute the bm formula
                     m.clear();
                     if (rankS.containsKey(docNo)) {
                         double temp = rankS.get(docNo);
                         temp += bm;
-                        rankS.replace(docNo, temp);
+                        rankS.replace(docNo, temp);    //save rank for each doc
                     } else {
                         rankS.put(docNo, bm);
                     }
@@ -159,39 +154,32 @@ public class Ranker {
             }
 
         }
-        /*
-        Map<String, Double> scoreS=new LinkedHashMap<>();
-        for(String docNo:rankS.keySet()){
-            scoreS.put(docNo,((double)rankS.get(docNo)/ docsLen.get(docNo)));
-        }*/
         Map<String, Double> descRank=new LinkedHashMap<>();
-        Map<String, Double> sumDocs=new LinkedHashMap<>();
-        Map<String, Double> docsSize=new LinkedHashMap<>();
-        for(String pos:desc.keySet()) {
+        for(String pos:desc.keySet()) {          // for each word in description   *description words only have bm score*
             String[] docs = pos.split(",");
             for (String doc : docs) {
                 boolean isDocCity = false;
                 String docNo = doc.split("\\*")[0];
                 for (String posC : cityPos) {
                     if (posC.contains(docNo + "*") || posC.contains(docNo + ",") || posC.contains(docNo + "\n")) {
-                        isDocCity = true;
+                        isDocCity = true;    // selected city appear in doc
                         break;
                     }
                 }
-                if (isDocCity || cityPos.size() == 0) {
+                if (isDocCity || cityPos.size() == 0) {     // if doc contains at least one selected city
                     double bm = 0;
-                    int countQ = desc.get(pos).split("\\*").length;
-                    int countD = doc.split("\\*").length - 1;
+                    int countQ = desc.get(pos).split("\\*").length;    // count occurences in description
+                    int countD = doc.split("\\*").length - 1;      // count occurences in doc
                     int docLength = docsLen.get(docNo);
                     int df = docs.length;
                     double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
                     double log = Math.log((N + 1) / df) / Math.log(2);
                     t = t * countQ * log;
-                    bm += 0.6*t;
+                    bm += t;     //compute the bm formula
                     if(descRank.containsKey(docNo)){
                         double temp=descRank.get(docNo);
                         temp+=bm;
-                        descRank.replace(docNo,temp);
+                        descRank.replace(docNo,temp);    //save rank for each doc
                     }
                     else{
                         descRank.put(docNo,bm);
@@ -203,12 +191,12 @@ public class Ranker {
         double Wq=0.4;
         double Wd=0.6;
         double Ws=0;
-        if(isSemantic){
+        if(isSemantic){       //each part of the formula has a different weight in final rank
             Wq=0.2;
             Wd=0.5;
             Ws=0.3;
         }
-        for(String word:docRank.keySet()){
+        for(String word:docRank.keySet()){   //compute final rank for each doc
             double rank=Wq*docRank.get(word);
             if(descRank.containsKey(word)){
                 rank+=Wd*descRank.get(word);
@@ -218,7 +206,7 @@ public class Ranker {
             }
             ranking.put(word,rank);
         }
-        for(String des: descRank.keySet()){
+        for(String des: descRank.keySet()){   //compute final rank for each doc from description which wasnt in the query words list
             if(!ranking.containsKey(des)){
                 double rank=Wd*descRank.get(des);
                 if(rankS.containsKey(des)){
@@ -227,16 +215,22 @@ public class Ranker {
                 ranking.put(des,rank);
             }
         }
-        for(String docNo:rankS.keySet()){
+        for(String docNo:rankS.keySet()){    //compute final rank for each doc from seamantic words which wasnt in the query words list
             if(!ranking.containsKey(docNo)){
                 double rank=Ws*rankS.get(docNo);
                 ranking.put(docNo,rank);
             }
         }
-        List<String> sortedDocs=sort(ranking);
+        List<String> sortedDocs=sort(ranking);   //sort docs in descending order by rank
         return sortedDocs;
     }
 
+    /**
+     *
+     * @param pos1-  posting of first word
+     * @param pos2-  posting of second word
+     * @return the minimal distance by the positions of each word in the posting
+     */
     private int minDist(String pos1, String pos2) {
         String[] temp1=pos1.split("\\*");
         String[] temp2=pos2.split("\\*");
@@ -257,6 +251,11 @@ public class Ranker {
         return ans;
     }
 
+    /**
+     *
+     * @param docRank- map to sort
+     * @return a sorted list of doc numbers.
+     */
     private List<String> sort(Map<String, Double> docRank) {
         Map<Double,String> m=new LinkedHashMap<>();
         for(String key:docRank.keySet()){
@@ -264,49 +263,16 @@ public class Ranker {
             m.put(bm,key);
         }
         TreeSet<Double> t=new TreeSet<>(m.keySet());
-        TreeSet<Double> t2=(TreeSet)t.descendingSet();
+        TreeSet<Double> t2=(TreeSet)t.descendingSet();   // sort ranks by descending order
         List<String> docs=new LinkedList<>();
         int i=0;
         for(Double d:t2){
             if(i==50)
-                break;
+                break;      // only save top 50 ranked docs
             docs.add(m.get(d));
             i++;
         }
         return docs;
-    }
-
-    private int getOccur(String w, String query) {
-        int ans=0;
-        String[] temp=query.split(" ");
-        for (String s:temp){
-            if(s.equalsIgnoreCase(w))
-                ans++;
-        }
-        return ans;
-    }
-
-    private int getDocL(String docNo, boolean isStem, String path) {
-        String doc=Indexer.search(path,docNo,isStem,"docs");
-        String length=doc.split(",")[2];
-        return Integer.parseInt(length);
-    }
-
-    private Map<String, Double> docsLen(String path, boolean isStem){
-        Map<String,Double> m=new LinkedHashMap<>();
-        if(isStem)
-            path+=("/docsb.txt");
-        else
-            path+=("/docsa.txt");
-        String p="";
-        try{
-            p = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
-        }catch (IOException e){e.printStackTrace();}
-        String[] docs=p.split("\n");
-        for(String doc: docs){
-            m.put(doc.split(":")[0],Double.parseDouble(doc.split(",")[2]));
-        }
-        return m;
     }
 
 }

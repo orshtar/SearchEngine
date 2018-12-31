@@ -89,16 +89,6 @@ public class ReadFile {
                         j=i;
                         while (docNO.charAt(i) != ' ' && docNO.charAt(i) != '<')
                             i++;
-                        String[] strings = docNO.substring(j, i).split("-");//split the doc number by -
-                    /*if(strings.length>=2){
-                        docNO=getFileName(strings[0]);//encode the file num
-                        try {
-                            docNO += ("-" + Integer.parseInt(strings[1]));//add the doc second part without zeros at the start
-                        }catch (NumberFormatException e){
-                            docNO += ("-" +strings[1]);
-                        }
-                    }
-                    else*/
                         docNO = docNO.substring(j, i);//save as is
                         String[] text2 = text[1].split("</TEXT>");
                         Parse parser = new Parse();
@@ -111,20 +101,6 @@ public class ReadFile {
         }
     }
 
-    /**
-     *
-     * return the encode of the file number
-     *
-     * @param name strung to encode
-     * @return the string encoded
-     */
-    public static String getFileName(String name){
-        if(!filesNum.containsKey(name)) {//if the name was not save add it to encoded map
-            filesNum.put(name, shortName);
-            shortName++;
-        }
-        return filesNum.get(name) + "";//return the encode version
-    }
 
     /**
      *

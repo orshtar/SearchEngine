@@ -35,11 +35,14 @@ public class Indexer {
      * @param max_tf most frequent term in doc
      * @param city city of the doc
      * @param language language of the doc
+     * @param entities entities of the doc
+     *
      */
-    public void invertIndex(Map<String,String> map, String docNum, int max_tf, int docLen, String city,String language, Map<String, Integer> entities){
+    public void invertIndex(Map<String,String> map, String docNum, int max_tf, int docLen, String city,String language, Map<String, Double> entities){
         String entitie="";
         for(String s: entities.keySet()){
-            entitie+=(s+"/"+entities.get(s)+"*");
+            String score= String.format("%.5f",entities.get(s));
+            entitie+=(s+"/"+score+"*");    //save entities in docs' posting
         }
         docs.put(docNum,max_tf+","+map.size()+","+docLen+","+city+","+language+","+entitie);
         if(!language.equals("") && !languages.contains(language))

@@ -86,26 +86,53 @@ public class Model {
         return Indexer.getLangs();
     }
 
+    /**
+     *
+     * @param savePath- the path to the cities' posting
+     * @return all cities found in corpus
+     */
     public Set<String> getCities(String savePath){
         Set<String> ans=new HashSet<>();
         String p="";
         try {
             p = new String(Files.readAllBytes(Paths.get(savePath + "/cities.txt")), StandardCharsets.UTF_8);//read a posting file
-        }catch(IOException e){return ans;}
+        }catch(IOException e){return ans;}     //if posting not found return empty cities list
         String[] lines=p.split("\n");
         for(String line:lines){
-            ans.add(line.split(":")[0]);
+            ans.add(line.split(":")[0]);     //find only city name
         }
         return ans;
     }
 
+    /**
+     *
+     * @param query- the query to search
+     * @param desc- description of the query from query file
+     * @param qNum- query number
+     * @param isStem- if stemming need to be done
+     * @param isSemantic- if semantic search need to be done
+     * @param dataPath- path to corpus
+     * @param savePath- path to posting files
+     * @param selectedCities- list of cities the user chose
+     * @return list of doc nums that are relevant to the query
+     */
     public List<String> searchQuery(String query, String desc, String qNum, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
         Parse.initStopWords(dataPath);
         Searcher s=new Searcher();
-        List<String> docs=s.SearchQ(query,desc,isStem,isSemantic,savePath,selectedCities);
+        List<String> docs=s.SearchQ(query,desc,isStem,isSemantic,savePath,selectedCities); //call the searcher
         return docs;
     }
 
+    /**
+     *
+     * @param path- path to queries file
+     * @param isStem- if stemming need to be done
+     * @param isSemantic- if semantic search need to be done
+     * @param stpPath- path to stop words
+     * @param savePath- path to posting files
+     * @param selectedCities- list of cities the user chose
+     * @return a map- for each query number a list of relevant docs
+     */
     public Map<String,List<String>> searchFileQuery(String path, boolean isStem, boolean isSemantic, String stpPath, String savePath, List<String> selectedCities){
         Map<String,List<String>> returnedDocs=new LinkedHashMap<>();
         String f="";
@@ -118,29 +145,35 @@ public class Model {
         for(String q:queries){
             i++;
             if(!q.equals("")) {
-                String[] num=q.split("<num> Number: ");
+                String[] num=q.split("<num> Number: ");    // extract the query num
                 if(num.length>1){
                     qNum=num[1].split("\n")[0];
                 }
-                String[] title = q.split("<title>");
+                String[] title = q.split("<title>");     // extract the query itself
                 if (title.length > 1) {
                     query=title[1].split("\n")[0];
                 }
                 String description="";
-                String[] desc = q.split("<desc> Description: ");
+                String[] desc = q.split("<desc> Description: ");    // extract the query description
                 if (desc.length > 1) {
                     description=desc[1].split("\n<narr>")[0];
                 }
-                List<String> tempDocs=searchQuery(query,description,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);
+                List<String> tempDocs=searchQuery(query,description,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);   //search relevant docs for each qury
                 returnedDocs.put(qNum,tempDocs);
             }
-            System.out.println(i);
         }
         return returnedDocs;
     }
 
+    /**
+     *
+     * @param docNO- doc num we want to get entities to
+     * @param savePath- path to posting files
+     * @param stem- if stemming need to be done
+     * @return stroing of entities for the doc
+     */
     public String getEntities(String docNO, String savePath, boolean stem) {
-        String posDoc=Indexer.search(savePath,docNO,stem,"docs");
+        String posDoc=Indexer.search(savePath,docNO,stem,"docs"); //search doc num in docs posting
         String[] psik=posDoc.split(",");
         String entities=psik[psik.length-1];
         entities=entities.replaceAll("/",": ");
@@ -148,20 +181,32 @@ public class Model {
         return entities;
     }
 
+    /**
+     *
+     * @param savePath- peth to posting files
+     * @return true if there are posting files in path(false if empty)
+     */
     public boolean isPostingEmpty(String savePath) {
-        boolean ans=false;
+        boolean ans;
         File f=new File(savePath);
-        ans=f.list().length==0;
+        ans=(f.list().length==0);
         return ans;
     }
 
+    /**
+     *
+     * @param location- path to save the results in
+     * @param returnedDocsMulti- map of relevant docs for each query
+     * @param isSemantic- is semantic search is on
+     * @param isStem- is stemming need to be done
+     */
     public void saveResultsMulti(String location, Map<String, List<String>> returnedDocsMulti, boolean isSemantic, boolean isStem) {
         String addChar="a";
         if(isStem){
-            addChar="b";
+            addChar="b";     // mark file by stemming
         }
         if(isSemantic){
-            addChar+="s";
+            addChar+="s";    // mark file by semantic
         }
         else
             addChar+="n";
@@ -170,7 +215,7 @@ public class Model {
             BufferedWriter bw = new BufferedWriter(fw);
             for(String qID: returnedDocsMulti.keySet()){
                 for(String docNum: returnedDocsMulti.get(qID)){
-                    bw.write(qID+" 0 "+docNum+" 1 42.38 mt\n");
+                    bw.write(qID+" 0 "+docNum+" 1 42.38 mt\n");   // write docs in treceval format
                 }
             }
             fw.flush();//flush and close the file
@@ -180,13 +225,21 @@ public class Model {
         } catch(IOException e){e.printStackTrace();}
     }
 
+    /**
+     *
+     * @param location- path to save the results in
+     * @param returnedDocsSingle- map of relevant docs for each query
+     * @param qID- number of qury (random)
+     * @param isSemantic- is semantic search is on
+     * @param isStem- is stemming need to be done
+     */
     public void saveResultsSingle(String location, List<String> returnedDocsSingle, String qID, boolean isSemantic, boolean isStem) {
         String addChar="a";
         if(isStem){
-            addChar="b";
+            addChar="b";      // mark file by stemming
         }
         if(isSemantic){
-            addChar+="s";
+            addChar+="s";    // mark file by semantic
         }
         else
             addChar+="n";
@@ -194,7 +247,7 @@ public class Model {
             FileWriter fw = new FileWriter(location + "/searchResults"+addChar+".txt");//open a dictionary file
             BufferedWriter bw = new BufferedWriter(fw);
             for(String doc:returnedDocsSingle){
-                bw.write(qID+" 0 "+doc+" 1 42.38 mt\n");
+                bw.write(qID+" 0 "+doc+" 1 42.38 mt\n");      // write docs in treceval format
             }
             fw.flush();//flush and close the file
             bw.flush();
@@ -203,6 +256,11 @@ public class Model {
         } catch(IOException e){e.printStackTrace();}
     }
 
+    /**
+     *
+     * @param savePath- path to posting files
+     * @return all languager found on corpus
+     */
     public Set<String> getLang(String savePath) {
         String p="";
         Set<String> ans=new HashSet<>();
@@ -215,7 +273,7 @@ public class Model {
         }
         String[] docs=p.split("\n");
         for(String doc: docs){
-            String[] split=doc.split(",");
+            String[] split=doc.split(",");     //get language from file
             if(split.length>=5 && !split[4].equals(""))
                 ans.add(split[4]);
         }
