@@ -108,7 +108,6 @@ public class Model {
      *
      * @param query- the query to search
      * @param desc- description of the query from query file
-     * @param qNum- query number
      * @param isStem- if stemming need to be done
      * @param isSemantic- if semantic search need to be done
      * @param dataPath- path to corpus
@@ -116,7 +115,7 @@ public class Model {
      * @param selectedCities- list of cities the user chose
      * @return list of doc nums that are relevant to the query
      */
-    public List<String> searchQuery(String query, String desc, String qNum, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
+    public List<String> searchQuery(String query, String desc, boolean isStem, boolean isSemantic,String dataPath, String savePath, List<String> selectedCities) {
         Parse.initStopWords(dataPath);
         Searcher s=new Searcher();
         List<String> docs=s.SearchQ(query,desc,isStem,isSemantic,savePath,selectedCities); //call the searcher
@@ -158,7 +157,7 @@ public class Model {
                 if (desc.length > 1) {
                     description=desc[1].split("\n<narr>")[0];
                 }
-                List<String> tempDocs=searchQuery(query,description,qNum,isStem,isSemantic,stpPath,savePath,selectedCities);   //search relevant docs for each qury
+                List<String> tempDocs=searchQuery(query,description,isStem,isSemantic,stpPath,savePath,selectedCities);   //search relevant docs for each qury
                 returnedDocs.put(qNum,tempDocs);
             }
         }
