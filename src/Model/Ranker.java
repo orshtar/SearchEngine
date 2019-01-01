@@ -215,7 +215,7 @@ public class Ranker {
                 ranking.put(des,rank);
             }
         }
-        for(String docNo:rankS.keySet()){    //compute final rank for each doc from seamantic words which wasnt in the query words list
+        for(String docNo:rankS.keySet()){    //compute final rank for each doc from semantic words which wasnt in the query words list
             if(!ranking.containsKey(docNo)){
                 double rank=Ws*rankS.get(docNo);
                 ranking.put(docNo,rank);

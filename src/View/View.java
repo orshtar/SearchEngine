@@ -203,6 +203,9 @@ public class View {
         model.saveDict(savePath, stem.isSelected());
     }
 
+    /**
+     * set combobox with all cities found in corpus
+     */
     public void setCities() {
         if (!savePath.equals("")) {
             Set<String> cities = model.getCities(savePath);
