@@ -51,6 +51,7 @@ public class Searcher {
         for(String term:q.keySet()){
             boolean a=false;
             String next="";
+            String pre="";
             for(String term2:q.keySet()){
                 if(a){
                     next=term;
@@ -58,6 +59,8 @@ public class Searcher {
                 }
                 if(term2.equals(term))
                     a=true;
+                if(!a)
+                    pre=term2;
             }
             String posting;
             if(term.toLowerCase().charAt(0)>='a' && term.toLowerCase().charAt(0)<='z')
@@ -69,7 +72,7 @@ public class Searcher {
             String line="";
             if(isSemantic) {
                 try {
-                    URL url = new URL("https://api.datamuse.com/words?ml=" + term+"&rel_syn="+term+"&lc="+next);
+                    URL url = new URL("https://api.datamuse.com/words?ml=" + term+"&rel_syn="+term+"&lc="+pre+"&rc="+next);
                     br = new BufferedReader(new InputStreamReader(url.openStream()));
                     line = br.readLine();
                     br.close();
