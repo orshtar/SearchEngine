@@ -84,7 +84,7 @@ public class Ranker {
                         double t = ((k + 1) * countD) / (countD + k * (1 - b + b * (docLength / avdl)));
                         double log = Math.log((N + 1) / df) / Math.log(2);
                         t = t * countQ * log;    //compute the bm formula
-                        bm += 0.65 * t;   //bm has 0.65 weight of total rank
+                        bm += 0.75 * t;   //bm has 0.65 weight of total rank
                         m.clear();
                         for (String pos2 : postings.keySet()) {   // compare each word to other words in qurey (to find positions)
                             if (!postings.get(pos).equals(postings.get(pos2))) {
@@ -109,7 +109,7 @@ public class Ranker {
                         for (String p : m.keySet()) {
                             sum += m.get(p);     // sum position score of word with all other words
                         }
-                        bm += (0.35 * (sum));    // position score has 0.35 weight of total rank
+                        bm += (0.25 * (sum));    // position score has 0.35 weight of total rank
                         if (docRank.containsKey(docNo)) {
                             double temp = docRank.get(docNo);
                             temp += bm;

@@ -37,14 +37,28 @@ public class Searcher {
             postingCity.add(Indexer.search(postPath,city,isStem,"cities.txt"));  // get city posting for each city the user selected
         }
         for(String des:d.keySet()) {
-            String posting;
-            if (des.toLowerCase().charAt(0) >= 'a' && des.toLowerCase().charAt(0) <= 'z')
-                posting = Indexer.search(postPath, des.toLowerCase(), isStem, des.toLowerCase().charAt(0) + "");
-            else
-                posting = Indexer.search(postPath, des.toLowerCase(), isStem, "nums");   // find posting of each word in description
-            description.put(posting, d.get(des));
+            if(!(des.equalsIgnoreCase("information")||des.equalsIgnoreCase("Identify")
+                    ||des.equalsIgnoreCase("discuss")|| des.equalsIgnoreCase("provide")
+                    ||des.equalsIgnoreCase("documents")|| des.equalsIgnoreCase("i.e"))) {
+                String posting;
+                if (des.toLowerCase().charAt(0) >= 'a' && des.toLowerCase().charAt(0) <= 'z')
+                    posting = Indexer.search(postPath, des.toLowerCase(), isStem, des.toLowerCase().charAt(0) + "");
+                else
+                    posting = Indexer.search(postPath, des.toLowerCase(), isStem, "nums");   // find posting of each word in description
+                description.put(posting, d.get(des));
+            }
         }
         for(String term:q.keySet()){
+            boolean a=false;
+            String next="";
+            for(String term2:q.keySet()){
+                if(a){
+                    next=term;
+                    break;
+                }
+                if(term2.equals(term))
+                    a=true;
+            }
             String posting;
             if(term.toLowerCase().charAt(0)>='a' && term.toLowerCase().charAt(0)<='z')
                 posting=Indexer.search(postPath,term.toLowerCase(),isStem,term.toLowerCase().charAt(0)+"");
@@ -55,7 +69,7 @@ public class Searcher {
             String line="";
             if(isSemantic) {
                 try {
-                    URL url = new URL("https://api.datamuse.com/words?ml=" + term+"&rel_syn="+term);
+                    URL url = new URL("https://api.datamuse.com/words?ml=" + term+"&rel_syn="+term+"&lc="+next);
                     br = new BufferedReader(new InputStreamReader(url.openStream()));
                     line = br.readLine();
                     br.close();
